@@ -1,0 +1,296 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		C2006E5515145CA500FB79E0 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C2006E5415145CA500FB79E0 /* Cocoa.framework */; };
+		C2006E5F15145CA500FB79E0 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = C2006E5D15145CA500FB79E0 /* InfoPlist.strings */; };
+		C2006E6115145CA500FB79E0 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = C2006E6015145CA500FB79E0 /* main.m */; };
+		C2006E6515145CA500FB79E0 /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = C2006E6315145CA500FB79E0 /* Credits.rtf */; };
+		C2006E6815145CA500FB79E0 /* AGAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = C2006E6715145CA500FB79E0 /* AGAppDelegate.m */; };
+		C2006E6B15145CA500FB79E0 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = C2006E6915145CA500FB79E0 /* MainMenu.xib */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		C2006E5015145CA500FB79E0 /* itunesRecentlyAddedAlbums.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = itunesRecentlyAddedAlbums.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		C2006E5415145CA500FB79E0 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
+		C2006E5715145CA500FB79E0 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
+		C2006E5815145CA500FB79E0 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
+		C2006E5915145CA500FB79E0 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		C2006E5C15145CA500FB79E0 /* itunesRecentlyAddedAlbums-Info.plist */ = {isa = PBXFileReference; path = "itunesRecentlyAddedAlbums-Info.plist"; sourceTree = "<group>"; };
+		C2006E5E15145CA500FB79E0 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		C2006E6015145CA500FB79E0 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		C2006E6215145CA500FB79E0 /* itunesRecentlyAddedAlbums-Prefix.pch */ = {isa = PBXFileReference; path = "itunesRecentlyAddedAlbums-Prefix.pch"; sourceTree = "<group>"; };
+		C2006E6415145CA500FB79E0 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.rtf; name = en; path = en.lproj/Credits.rtf; sourceTree = "<group>"; };
+		C2006E6615145CA500FB79E0 /* AGAppDelegate.h */ = {isa = PBXFileReference; path = AGAppDelegate.h; sourceTree = "<group>"; };
+		C2006E6715145CA500FB79E0 /* AGAppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AGAppDelegate.m; sourceTree = "<group>"; };
+		C2006E6A15145CA500FB79E0 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/MainMenu.xib; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		C2006E4D15145CA500FB79E0 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C2006E5515145CA500FB79E0 /* Cocoa.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		C2006E4515145CA500FB79E0 = {
+			isa = PBXGroup;
+			children = (
+				C2006E5A15145CA500FB79E0 /* itunesRecentlyAddedAlbums */,
+				C2006E5315145CA500FB79E0 /* Frameworks */,
+				C2006E5115145CA500FB79E0 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		C2006E5115145CA500FB79E0 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				C2006E5015145CA500FB79E0 /* itunesRecentlyAddedAlbums.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		C2006E5315145CA500FB79E0 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				C2006E5415145CA500FB79E0 /* Cocoa.framework */,
+				C2006E5615145CA500FB79E0 /* Other Frameworks */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		C2006E5615145CA500FB79E0 /* Other Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				C2006E5715145CA500FB79E0 /* AppKit.framework */,
+				C2006E5815145CA500FB79E0 /* CoreData.framework */,
+				C2006E5915145CA500FB79E0 /* Foundation.framework */,
+			);
+			name = "Other Frameworks";
+			sourceTree = "<group>";
+		};
+		C2006E5A15145CA500FB79E0 /* itunesRecentlyAddedAlbums */ = {
+			isa = PBXGroup;
+			children = (
+				C2006E6615145CA500FB79E0 /* AGAppDelegate.h */,
+				C2006E6715145CA500FB79E0 /* AGAppDelegate.m */,
+				C2006E6915145CA500FB79E0 /* MainMenu.xib */,
+				C2006E5B15145CA500FB79E0 /* Supporting Files */,
+			);
+			path = itunesRecentlyAddedAlbums;
+			sourceTree = "<group>";
+		};
+		C2006E5B15145CA500FB79E0 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				C2006E5C15145CA500FB79E0 /* itunesRecentlyAddedAlbums-Info.plist */,
+				C2006E5D15145CA500FB79E0 /* InfoPlist.strings */,
+				C2006E6015145CA500FB79E0 /* main.m */,
+				C2006E6215145CA500FB79E0 /* itunesRecentlyAddedAlbums-Prefix.pch */,
+				C2006E6315145CA500FB79E0 /* Credits.rtf */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		C2006E4F15145CA500FB79E0 /* itunesRecentlyAddedAlbums */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = C2006E6E15145CA500FB79E0 /* Build configuration list for PBXNativeTarget "itunesRecentlyAddedAlbums" */;
+			buildPhases = (
+				C2006E4C15145CA500FB79E0 /* Sources */,
+				C2006E4D15145CA500FB79E0 /* Frameworks */,
+				C2006E4E15145CA500FB79E0 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = itunesRecentlyAddedAlbums;
+			productName = itunesRecentlyAddedAlbums;
+			productReference = C2006E5015145CA500FB79E0 /* itunesRecentlyAddedAlbums.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		C2006E4715145CA500FB79E0 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				CLASSPREFIX = AG;
+				LastUpgradeCheck = 0430;
+			};
+			buildConfigurationList = C2006E4A15145CA500FB79E0 /* Build configuration list for PBXProject "itunesRecentlyAddedAlbums" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = C2006E4515145CA500FB79E0;
+			productRefGroup = C2006E5115145CA500FB79E0 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				C2006E4F15145CA500FB79E0 /* itunesRecentlyAddedAlbums */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		C2006E4E15145CA500FB79E0 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C2006E5F15145CA500FB79E0 /* InfoPlist.strings in Resources */,
+				C2006E6515145CA500FB79E0 /* Credits.rtf in Resources */,
+				C2006E6B15145CA500FB79E0 /* MainMenu.xib in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		C2006E4C15145CA500FB79E0 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C2006E6115145CA500FB79E0 /* main.m in Sources */,
+				C2006E6815145CA500FB79E0 /* AGAppDelegate.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXVariantGroup section */
+		C2006E5D15145CA500FB79E0 /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				C2006E5E15145CA500FB79E0 /* en */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+		C2006E6315145CA500FB79E0 /* Credits.rtf */ = {
+			isa = PBXVariantGroup;
+			children = (
+				C2006E6415145CA500FB79E0 /* en */,
+			);
+			name = Credits.rtf;
+			sourceTree = "<group>";
+		};
+		C2006E6915145CA500FB79E0 /* MainMenu.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				C2006E6A15145CA500FB79E0 /* en */,
+			);
+			name = MainMenu.xib;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		C2006E6C15145CA500FB79E0 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				CLANG_ENABLE_OBJC_ARC = YES;
+				COPY_PHASE_STRIP = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		C2006E6D15145CA500FB79E0 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				CLANG_ENABLE_OBJC_ARC = YES;
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		C2006E6F15145CA500FB79E0 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "itunesRecentlyAddedAlbums/itunesRecentlyAddedAlbums-Prefix.pch";
+				INFOPLIST_FILE = "itunesRecentlyAddedAlbums/itunesRecentlyAddedAlbums-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Debug;
+		};
+		C2006E7015145CA500FB79E0 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "itunesRecentlyAddedAlbums/itunesRecentlyAddedAlbums-Prefix.pch";
+				INFOPLIST_FILE = "itunesRecentlyAddedAlbums/itunesRecentlyAddedAlbums-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		C2006E4A15145CA500FB79E0 /* Build configuration list for PBXProject "itunesRecentlyAddedAlbums" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C2006E6C15145CA500FB79E0 /* Debug */,
+				C2006E6D15145CA500FB79E0 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		C2006E6E15145CA500FB79E0 /* Build configuration list for PBXNativeTarget "itunesRecentlyAddedAlbums" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C2006E6F15145CA500FB79E0 /* Debug */,
+				C2006E7015145CA500FB79E0 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = C2006E4715145CA500FB79E0 /* Project object */;
+}
