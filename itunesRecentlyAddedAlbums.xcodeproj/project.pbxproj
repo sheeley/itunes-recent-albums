@@ -13,6 +13,8 @@
 		C2006E6515145CA500FB79E0 /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = C2006E6315145CA500FB79E0 /* Credits.rtf */; };
 		C2006E6815145CA500FB79E0 /* AGAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = C2006E6715145CA500FB79E0 /* AGAppDelegate.m */; };
 		C2006E6B15145CA500FB79E0 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = C2006E6915145CA500FB79E0 /* MainMenu.xib */; };
+		C2006E7315145CBA00FB79E0 /* AGItunes.m in Sources */ = {isa = PBXBuildFile; fileRef = C2006E7215145CBA00FB79E0 /* AGItunes.m */; };
+		C2006E7515145DBF00FB79E0 /* ScriptingBridge.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C2006E7415145DBF00FB79E0 /* ScriptingBridge.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -21,14 +23,18 @@
 		C2006E5715145CA500FB79E0 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
 		C2006E5815145CA500FB79E0 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
 		C2006E5915145CA500FB79E0 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
-		C2006E5C15145CA500FB79E0 /* itunesRecentlyAddedAlbums-Info.plist */ = {isa = PBXFileReference; path = "itunesRecentlyAddedAlbums-Info.plist"; sourceTree = "<group>"; };
+		C2006E5C15145CA500FB79E0 /* itunesRecentlyAddedAlbums-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "itunesRecentlyAddedAlbums-Info.plist"; sourceTree = "<group>"; };
 		C2006E5E15145CA500FB79E0 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		C2006E6015145CA500FB79E0 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
-		C2006E6215145CA500FB79E0 /* itunesRecentlyAddedAlbums-Prefix.pch */ = {isa = PBXFileReference; path = "itunesRecentlyAddedAlbums-Prefix.pch"; sourceTree = "<group>"; };
+		C2006E6215145CA500FB79E0 /* itunesRecentlyAddedAlbums-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "itunesRecentlyAddedAlbums-Prefix.pch"; sourceTree = "<group>"; };
 		C2006E6415145CA500FB79E0 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.rtf; name = en; path = en.lproj/Credits.rtf; sourceTree = "<group>"; };
-		C2006E6615145CA500FB79E0 /* AGAppDelegate.h */ = {isa = PBXFileReference; path = AGAppDelegate.h; sourceTree = "<group>"; };
+		C2006E6615145CA500FB79E0 /* AGAppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AGAppDelegate.h; sourceTree = "<group>"; };
 		C2006E6715145CA500FB79E0 /* AGAppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AGAppDelegate.m; sourceTree = "<group>"; };
 		C2006E6A15145CA500FB79E0 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/MainMenu.xib; sourceTree = "<group>"; };
+		C2006E7115145CBA00FB79E0 /* AGItunes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AGItunes.h; sourceTree = "<group>"; };
+		C2006E7215145CBA00FB79E0 /* AGItunes.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AGItunes.m; sourceTree = "<group>"; };
+		C2006E7415145DBF00FB79E0 /* ScriptingBridge.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ScriptingBridge.framework; path = System/Library/Frameworks/ScriptingBridge.framework; sourceTree = SDKROOT; };
+		C2006E76151460F700FB79E0 /* iTunes.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = iTunes.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -36,6 +42,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C2006E7515145DBF00FB79E0 /* ScriptingBridge.framework in Frameworks */,
 				C2006E5515145CA500FB79E0 /* Cocoa.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -63,6 +70,7 @@
 		C2006E5315145CA500FB79E0 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				C2006E7415145DBF00FB79E0 /* ScriptingBridge.framework */,
 				C2006E5415145CA500FB79E0 /* Cocoa.framework */,
 				C2006E5615145CA500FB79E0 /* Other Frameworks */,
 			);
@@ -82,10 +90,13 @@
 		C2006E5A15145CA500FB79E0 /* itunesRecentlyAddedAlbums */ = {
 			isa = PBXGroup;
 			children = (
+				C2006E76151460F700FB79E0 /* iTunes.h */,
 				C2006E6615145CA500FB79E0 /* AGAppDelegate.h */,
 				C2006E6715145CA500FB79E0 /* AGAppDelegate.m */,
 				C2006E6915145CA500FB79E0 /* MainMenu.xib */,
 				C2006E5B15145CA500FB79E0 /* Supporting Files */,
+				C2006E7115145CBA00FB79E0 /* AGItunes.h */,
+				C2006E7215145CBA00FB79E0 /* AGItunes.m */,
 			);
 			path = itunesRecentlyAddedAlbums;
 			sourceTree = "<group>";
@@ -168,6 +179,7 @@
 			files = (
 				C2006E6115145CA500FB79E0 /* main.m in Sources */,
 				C2006E6815145CA500FB79E0 /* AGAppDelegate.m in Sources */,
+				C2006E7315145CBA00FB79E0 /* AGItunes.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
