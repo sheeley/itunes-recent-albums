@@ -10,21 +10,38 @@
 
 @implementation AGAppDelegate
 
+NSString * const SETTINGS_KEY = @"settings";
+NSString * const NO_PLAYLIST = @"No playlist";
+
 @synthesize window = _window, agItunes,
-minSongPopUp, toPlaylistPopUp, 
-fromPlaylistPopUp, maxAlbumPopUp;
+minSongPopUp, toPlaylistSinglesPopUp, toPlaylistAlbumsPopUp, 
+fromPlaylistPopUp, maxAlbumPopUp, outputField,
+clearAlbumsPlaylistButton, clearSinglesPlaylistButton;
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
 {
-    int i = 0;
     self.agItunes = [[AGItunes alloc] init];    
-    SBElementArray *availablePlaylists = [self.agItunes getItunesPlaylists];
+    [self populateForm];
+}
 
+- (void) populateForm
+{
+    SBElementArray *availablePlaylists = [self.agItunes getItunesPlaylists];
+    
+    [self.toPlaylistSinglesPopUp insertItemWithTitle:NO_PLAYLIST atIndex:0];
+    [self.toPlaylistAlbumsPopUp insertItemWithTitle:NO_PLAYLIST atIndex:0];
+    [self.fromPlaylistPopUp insertItemWithTitle:NO_PLAYLIST atIndex:0];
+    int i = 1, ix = 1;
     if(availablePlaylists != nil){
-        for(iTunesPlaylist *playlist in availablePlaylists){
-            [self.toPlaylistPopUp insertItemWithTitle:[playlist name] atIndex:i];
-            [self.fromPlaylistPopUp insertItemWithTitle:[playlist name] atIndex:i];
-            i++;
+        for(iTunesUserPlaylist *playlist in availablePlaylists){
+            if([playlist specialKind] == iTunesESpKNone && ![playlist smart]){
+                [self.toPlaylistSinglesPopUp insertItemWithTitle:[playlist name] atIndex:i];
+                [self.toPlaylistAlbumsPopUp insertItemWithTitle:[playlist name] atIndex:i];
+                i++;
+            }            
+            
+            [self.fromPlaylistPopUp insertItemWithTitle:[playlist name] atIndex:ix];
+            ix++;
         }
     }
     
@@ -37,18 +54,19 @@ fromPlaylistPopUp, maxAlbumPopUp;
         NSString *is = [NSString stringWithFormat:@"%d", (i+2)];
         [self.minSongPopUp insertItemWithTitle:is atIndex:i];
     }
-    
-    [self.maxAlbumPopUp selectItemAtIndex:8];
-    [self.minSongPopUp selectItemAtIndex:3];
 }
 
 -(IBAction)arrangeTracks:(id)sender
 {
     NSString *fromPlaylistName = [self.fromPlaylistPopUp titleOfSelectedItem];
-    NSString *toPlaylistName = [self.toPlaylistPopUp titleOfSelectedItem];
+    NSString *toPlaylistNameSingles = [self.toPlaylistSinglesPopUp titleOfSelectedItem];
+    NSString *toPlaylistNameAlbums = [self.toPlaylistAlbumsPopUp titleOfSelectedItem];
     int minTracks = (int) [[self.minSongPopUp titleOfSelectedItem] doubleValue];
     int maxAlbums = (int) [[self.maxAlbumPopUp titleOfSelectedItem] doubleValue];
-    if (![self validateFromPlaylist:fromPlaylistName andToName:toPlaylistName andMinSongs:minTracks andMaxAlbums:maxAlbums]) {
+    bool doClearSinglesPlaylist = [self.clearSinglesPlaylistButton state] == NSOnState;
+    bool doClearAlbumsPlaylist = [self.clearAlbumsPlaylistButton state] == NSOnState;
+
+    if (![self validateFromPlaylist:fromPlaylistName andToSinglesName:toPlaylistNameSingles andToAlbumsName:toPlaylistNameAlbums andMinSongs:minTracks andMaxAlbums:maxAlbums]) {
         // todo: message?
         return;
     }
@@ -59,15 +77,20 @@ fromPlaylistPopUp, maxAlbumPopUp;
     } else if([tracks count] == 0){
         // no tracks or tracks with no albums in the playlist
     } else {
-    
-        [self.agItunes createNewPlaylist:toPlaylistName FromDictionary:tracks andMinTracks:minTracks andMaxAlbums:maxAlbums];
+        if(doClearSinglesPlaylist && toPlaylistNameSingles != nil){
+            [self.agItunes clearPlaylistWithName:toPlaylistNameSingles];
+        }
+        if(doClearAlbumsPlaylist && toPlaylistNameAlbums != nil){
+            [self.agItunes clearPlaylistWithName:toPlaylistNameAlbums];            
+        }
+        [self.agItunes moveSinglesTo:toPlaylistNameSingles andAlbumsTo:toPlaylistNameAlbums FromDictionary:tracks andMinTracks:minTracks andMaxAlbums:maxAlbums];
     }
 }
 
--(bool) validateFromPlaylist: (NSString *) fromName andToName: (NSString *) toName andMinSongs: (int) minSongs andMaxAlbums: (int) maxAlbums
+-(bool) validateFromPlaylist: (NSString *) fromName andToSinglesName: (NSString *) toSinglesName andToAlbumsName: (NSString *) toAlbumsName andMinSongs: (int) minSongs andMaxAlbums: (int) maxAlbums
 {
     bool valid = true;
-    if(fromName == nil || toName == nil || minSongs == 0 || maxAlbums == 0){
+    if(fromName == NO_PLAYLIST || (toSinglesName ==  NO_PLAYLIST && toAlbumsName == NO_PLAYLIST) || minSongs == 0 || maxAlbums == 0){
         NSLog(@"problems");
         valid = false;
     }
