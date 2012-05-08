@@ -12,12 +12,17 @@
 
 @interface AGItunes : NSObject
 
-- (iTunesApplication *) getItunes;
+extern NSString * const NON_ALBUM_TITLE;
 
+- (iTunesApplication *) getItunes;
 - (SBElementArray *) getItunesPlaylists;
 - (bool) albumTitleIsBad: (NSString *) albumTitle;
-- (iTunesPlaylist *) getPlaylistWithName: (NSString *) playlistName;
-- (NSDictionary *) getSongsFromPlaylist: (NSString *) playlistName;
-- (void) createNewPlaylist: (NSString *) playlistName FromDictionary: (NSDictionary *) albums andMinTracks: (NSInteger) minTracks andMaxAlbums: (int)maxAlbums;
+- (iTunesUserPlaylist *) getPlaylistWithName: (NSString *) playlistName;
+- (NSDictionary *) getSongsFromPlaylist: (NSString *) fromPlaylistName;
+-(void) clearPlaylistWithName: (NSString *) playlistName;
+- (void) clearPlaylist: (iTunesPlaylist *) playlist;
+- (void) moveSinglesTo: (NSString *) toPlaylistNameSingles andAlbumsTo: (NSString *)toPlaylistNameAlbums FromDictionary: (NSDictionary *)albums andMinTracks:(int) minTracks andMaxAlbums: (int) maxAlbums;
+
+
 
 @end

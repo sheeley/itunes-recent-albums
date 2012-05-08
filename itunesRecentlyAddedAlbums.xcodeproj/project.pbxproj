@@ -15,6 +15,7 @@
 		C2006E6B15145CA500FB79E0 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = C2006E6915145CA500FB79E0 /* MainMenu.xib */; };
 		C2006E7315145CBA00FB79E0 /* AGItunes.m in Sources */ = {isa = PBXBuildFile; fileRef = C2006E7215145CBA00FB79E0 /* AGItunes.m */; };
 		C2006E7515145DBF00FB79E0 /* ScriptingBridge.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C2006E7415145DBF00FB79E0 /* ScriptingBridge.framework */; };
+		C2CB37D21555963A009460E4 /* AGUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = C2CB37D11555963A009460E4 /* AGUtils.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -35,6 +36,8 @@
 		C2006E7215145CBA00FB79E0 /* AGItunes.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AGItunes.m; sourceTree = "<group>"; };
 		C2006E7415145DBF00FB79E0 /* ScriptingBridge.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ScriptingBridge.framework; path = System/Library/Frameworks/ScriptingBridge.framework; sourceTree = SDKROOT; };
 		C2006E76151460F700FB79E0 /* iTunes.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = iTunes.h; sourceTree = "<group>"; };
+		C2CB37D01555963A009460E4 /* AGUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AGUtils.h; sourceTree = "<group>"; };
+		C2CB37D11555963A009460E4 /* AGUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AGUtils.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -93,6 +96,8 @@
 				C2006E76151460F700FB79E0 /* iTunes.h */,
 				C2006E6615145CA500FB79E0 /* AGAppDelegate.h */,
 				C2006E6715145CA500FB79E0 /* AGAppDelegate.m */,
+				C2CB37D01555963A009460E4 /* AGUtils.h */,
+				C2CB37D11555963A009460E4 /* AGUtils.m */,
 				C2006E6915145CA500FB79E0 /* MainMenu.xib */,
 				C2006E5B15145CA500FB79E0 /* Supporting Files */,
 				C2006E7115145CBA00FB79E0 /* AGItunes.h */,
@@ -180,6 +185,7 @@
 				C2006E6115145CA500FB79E0 /* main.m in Sources */,
 				C2006E6815145CA500FB79E0 /* AGAppDelegate.m in Sources */,
 				C2006E7315145CBA00FB79E0 /* AGItunes.m in Sources */,
+				C2CB37D21555963A009460E4 /* AGUtils.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -301,6 +307,7 @@
 				C2006E7015145CA500FB79E0 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
