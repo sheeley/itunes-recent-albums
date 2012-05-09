@@ -25,12 +25,7 @@ NSString * const NON_ALBUM_TITLE = @"__NO_WAY_AN_ALBUM_WILL_BE_NAMED_THIS";
 {
     iTunesApplication *iTunes = [self getItunes];    
     SBElementArray *sources = [iTunes sources];
-    iTunesSource *source;
-    for(source in sources){
-        if([[source name] isEqualToString:@"Library"]){
-            break;
-        }
-    }
+    iTunesSource *source = [sources objectWithName:@"Library"];
     if(source != nil){
         return [source userPlaylists];
     }
@@ -61,6 +56,7 @@ NSString * const NON_ALBUM_TITLE = @"__NO_WAY_AN_ALBUM_WILL_BE_NAMED_THIS";
     
     for(iTunesTrack *track in tracks){
         if(trackCount > MAX_TRACKS){
+            DLog(@"Hit %d tracks, done reading", MAX_TRACKS);
             break;
         }
         
@@ -68,20 +64,17 @@ NSString * const NON_ALBUM_TITLE = @"__NO_WAY_AN_ALBUM_WILL_BE_NAMED_THIS";
         if(albumTitle == nil || [albumTitle length] == 0){
             albumTitle = NON_ALBUM_TITLE;
         }
-
-        NSInteger trackId = [track trackNumber];
-        NSString *trackKey = (trackId == 0) ? [track name] : [NSString stringWithFormat:@"%ld", trackId];
         
-        if(trackKey == nil || [trackKey length] == 0 || [self albumTitleIsBad: albumTitle]){
+        if(([track trackNumber] == 0 && [[track name] length] == 0) || [self albumTitleIsBad: albumTitle]){
             DLog(@"SKIPPING: %@", [track name]);
             continue;
         }
         
-        NSMutableDictionary *currAlbum = [albums objectForKey:albumTitle];
+        NSMutableArray *currAlbum = [albums objectForKey:albumTitle];
         if(currAlbum == nil){
-            currAlbum = [[NSMutableDictionary alloc] init];
+            currAlbum = [[NSMutableArray alloc] init];
         }
-        [currAlbum setValue:track forKey:trackKey];
+        [currAlbum addObject:track];
         [albums setValue:currAlbum forKey:albumTitle];
         trackCount++;
     }
@@ -106,7 +99,6 @@ NSString * const NON_ALBUM_TITLE = @"__NO_WAY_AN_ALBUM_WILL_BE_NAMED_THIS";
     // have to delete backwards because they shift up
     for(int i = trackCount; i>=0; i--){
         iTunesTrack *track = [tracks objectAtIndex:i];
-        //DLog(@"deleting %@", [track name]);
         [track delete];
         deletedCount++;
     }  
@@ -117,11 +109,7 @@ NSString * const NON_ALBUM_TITLE = @"__NO_WAY_AN_ALBUM_WILL_BE_NAMED_THIS";
 {
     if(albums == nil) return;
     
-    iTunesUserPlaylist *singlesPlaylist = nil;
-    if(toPlaylistNameSingles != nil){
-        singlesPlaylist = [self getPlaylistWithName:toPlaylistNameSingles];
-    }
-    NSDictionary *singles = [albums objectForKey:NON_ALBUM_TITLE]; 
+    NSMutableArray *singles = [albums objectForKey:NON_ALBUM_TITLE]; 
     DLog(@"original singles count: %lu", [singles count]);
     [albums removeObjectForKey:NON_ALBUM_TITLE];
     
@@ -130,54 +118,62 @@ NSString * const NON_ALBUM_TITLE = @"__NO_WAY_AN_ALBUM_WILL_BE_NAMED_THIS";
     int albumCount = 0;
     int singlesCount = 0;
     int totalAlbums = [albums count];
+    bool skipAlbums = false;
     if(toPlaylistNameAlbums != nil){
         iTunesUserPlaylist *albumsPlaylist = [self getPlaylistWithName:toPlaylistNameAlbums];
         if(albumsPlaylist != nil){
             for(NSString *albumTitle in albums){
                 if(albumCount > maxAlbums){
-                    break;
+                    skipAlbums = YES;
                 }
 
-                NSDictionary *albumTracks = [albums objectForKey:albumTitle];
-                int currentAlbumTrackCount = [albumTracks count];
-                DLog(@"Working on album: %@", albumTitle);                
+                NSArray *album = [albums objectForKey:albumTitle];
+                int currentAlbumTrackCount = [album count];
+                //DLog(@"Working on album: %@", albumTitle);                
                 
-                if(currentAlbumTrackCount >= minTracks){
+                if(!skipAlbums && currentAlbumTrackCount >= minTracks){
                     //DLog(@"skipping album: %@ for having %lu songs when %d are required", albumTitle, [albumTracks count], minTracks);
-                    //[singles addEntriesFromDictionary:albumTracks];
-                    albumTrackCount += [self addSongs:albumTracks toPlayList:albumsPlaylist andIdentifier:@"there"];
+                    albumTrackCount += [self addSongs:album toPlayList:albumsPlaylist andIdentifier:@"there"];
                     albumCount++;
-                } else if(singlesPlaylist != nil){
-                    singlesCount += [self addSongs:albumTracks toPlayList:singlesPlaylist andIdentifier:@"here"];
+                } else {
+                    //singlesCount += [self addSongs:albumTracks toPlayList:singlesPlaylist andIdentifier:@"here"];
+                    [singles addObjectsFromArray:album];
                 }   
             }
         }
     }
-    DLog(@"%d albums (out of %d total) added with %d songs to %@", albumCount, totalAlbums, albumTrackCount, toPlaylistNameAlbums);
+    
+    iTunesUserPlaylist *singlesPlaylist = nil;
+    if(toPlaylistNameSingles != nil){
+        singlesPlaylist = [self getPlaylistWithName:toPlaylistNameSingles];
+    }
     
     // handle singles
     DLog(@"new singles count: %lu", [singles count]);
     if(singlesPlaylist != nil && singles != nil){
         singlesCount += [self addSongs:singles toPlayList:singlesPlaylist andIdentifier:@"singles"];
     }
+    DLog(@"\n%d albums (out of %d total) added with %d songs to %@", albumCount, totalAlbums, albumTrackCount, toPlaylistNameAlbums);
     DLog(@"%d singles added to %@", singlesCount, toPlaylistNameSingles);
 }
 
-- (int) addSongs: (NSDictionary *) albumTracks toPlayList: (iTunesPlaylist *) playlist andIdentifier: (NSString *) ident
+- (int) addSongs: (NSArray *) albumTracks toPlayList: (iTunesPlaylist *) playlist andIdentifier: (NSString *) ident
 {
     int count = 0;
-    NSArray *trackKeys = [albumTracks allKeys];
-    NSArray *keys = [trackKeys sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
-        return obj1 > obj2;
-    }];
+    if([ident isEqualToString:@"singles"]){
+        albumTracks = [albumTracks sortedArrayUsingComparator:^NSComparisonResult(iTunesTrack *t1, iTunesTrack *t2) {
+            return [t1 dateAdded] > [t2 dateAdded];
+        }];
+    } else {
+        albumTracks = [albumTracks sortedArrayUsingComparator:^NSComparisonResult(iTunesTrack *t1, iTunesTrack *t2) {
+            NSString *t1c = ([t1 trackNumber] != 0) ? [NSString stringWithFormat:@"%d",[t1 trackNumber]] : [t1 name];
+            NSString *t2c = ([t2 trackNumber] != 0) ? [NSString stringWithFormat:@"%d",[t2 trackNumber] ]: [t2 name];
+            return t1c > t2c;
+        }];
+    }
     
-    for(NSString *key in keys){
-        iTunesTrack *track = [albumTracks objectForKey:key];
-        if([[track name] isEqualToString:@"Go Now"] || [[track name] isEqualToString:@"I'm About Cream"]){
-            NSLog(@"WTF! %@ %@", [track name], track);
-        }
-        SBObject *result = [track duplicateTo:playlist];
-        DLog(@"%@ %@ %@", ident, [track name], result);
+    for(iTunesTrack *track in albumTracks){
+        [track duplicateTo:playlist];
         count++;
     }
     return count;
