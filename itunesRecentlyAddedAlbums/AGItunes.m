@@ -11,7 +11,22 @@
 
 @implementation AGItunes
 
-NSString * const NON_ALBUM_TITLE = @"__NO_WAY_AN_ALBUM_WILL_BE_NAMED_THIS";
+@synthesize runData, runConfig;
+
+- (id)init
+{
+    return [self initWithConfig:nil];
+}
+
+- (id) initWithConfig: (AGRunConfig *) config
+{
+    if (self = [super init])
+    {
+        self.runData = [[AGRunData alloc] init];   
+        self.runConfig = config;
+    }
+    return self;
+}
 
 - (iTunesApplication *) getItunes {
     iTunesApplication *iTunes = [SBApplication applicationWithBundleIdentifier:@"com.apple.iTunes"];
@@ -44,99 +59,166 @@ NSString * const NON_ALBUM_TITLE = @"__NO_WAY_AN_ALBUM_WILL_BE_NAMED_THIS";
     return [playlists objectWithName:playlistName];
 }
 
+- (AGRunData *) arrangeSongs
+{
+    if(runConfig == nil /*|| ![runConfig isValid]*/){
+        return nil;
+    }
+    
+    NSString *fromPlaylistName = runConfig.fromPlaylist;
+    NSString *toPlaylistNameSingles = runConfig.toPlaylistSingles;
+    NSString *toPlaylistNameAlbums = runConfig.toPlaylistAlbums;
+    
+    self.runData.startTime = [[NSDate alloc] init];
+    
+    NSDictionary *tracks = [self getSongsFromPlaylist:fromPlaylistName];
+    if(tracks == nil){
+        // from playlist doesn't exist
+        NSString *error = [NSString stringWithFormat:@"playlist %@ doesn't seem to exist", fromPlaylistName];
+        [self.runData logError:error];
+    } else if([tracks count] == 0){
+        // no tracks or tracks with no albums in the playlist
+        NSString *error = [NSString stringWithFormat: @"playlist %@ seems to be empty", fromPlaylistName];
+        [self.runData logError:error];
+    } else {
+        if(self.runConfig.doClearSinglesPlaylist && toPlaylistNameSingles != nil){
+            [self clearPlaylistWithName:toPlaylistNameSingles andContext:SINGLES_CONTEXT];
+        }
+        if(self.runConfig.doClearAlbumsPlaylist && toPlaylistNameAlbums != nil){
+            [self clearPlaylistWithName:toPlaylistNameAlbums andContext:ALBUM_CONTEXT];            
+        }
+        [self moveTracksFromDictionary: tracks]; 
+        [[self getItunes] activate];
+    }
+    
+    self.runData.endTime = [[NSDate alloc] init];
+    return self.runData;
+}
+
 - (NSDictionary *) getSongsFromPlaylist: (NSString *) fromPlaylistName
 {
     iTunesUserPlaylist *playlist = [self getPlaylistWithName:fromPlaylistName];
     if(playlist == nil) return nil;
     
     SBElementArray *tracks = [playlist tracks];
+    NSString *message = [NSString stringWithFormat:@"%d tracks in source playlist", [tracks count]];
+    [self.runData logMessage:message];
     NSMutableDictionary *albums = [[NSMutableDictionary alloc] init];
-    int trackCount = 0;
-    int MAX_TRACKS = 1000;
+    NSMutableArray *singles = [[NSMutableArray alloc] init];
     
     for(iTunesTrack *track in tracks){
-        if(trackCount > MAX_TRACKS){
-            DLog(@"Hit %d tracks, done reading", MAX_TRACKS);
+        if(self.runData.tracksIngested > self.runConfig.maxTracksToIngest){
+            message = [NSString stringWithFormat:@"Hit %d tracks, done reading", self.runConfig.maxTracksToIngest];
+            //DLog(@"%@", message);
+            [self.runData logMessage:message];
             break;
         }
         
-        NSString *albumTitle = [AGUtils stripString:[track album]]; 
-        if(albumTitle == nil || [albumTitle length] == 0){
-            albumTitle = NON_ALBUM_TITLE;
-        }
-        
+        NSString *albumTitle = [AGUtils stripString:[track album]];
         if(([track trackNumber] == 0 && [[track name] length] == 0) || [self albumTitleIsBad: albumTitle]){
-            DLog(@"SKIPPING: %@", [track name]);
+            message = [NSString stringWithFormat:@"SKIPPING: %@", [track name]];
+            [self.runData logMessage:message];
             continue;
         }
         
-        NSMutableArray *currAlbum = [albums objectForKey:albumTitle];
-        if(currAlbum == nil){
-            currAlbum = [[NSMutableArray alloc] init];
+        if(albumTitle == nil || [albumTitle length] == 0){
+            [singles addObject:track];
+        } else {
+            NSMutableArray *currAlbum = [albums objectForKey:albumTitle];
+            if(currAlbum == nil){
+                currAlbum = [[NSMutableArray alloc] init];
+            }
+            [currAlbum addObject:track];
+            [albums setValue:currAlbum forKey:albumTitle];
         }
-        [currAlbum addObject:track];
-        [albums setValue:currAlbum forKey:albumTitle];
-        trackCount++;
+        self.runData.tracksIngested++;
     }
-    DLog(@"%d total tracks added", trackCount);
-    return albums;
+    message = [NSString stringWithFormat:@"%d total tracks injested", self.runData.tracksIngested];
+    [self.runData logMessage:message];
+    
+    NSMutableDictionary *oTracks = [[NSMutableDictionary alloc] init];
+    if([singles count] > 0){
+        [oTracks setObject:singles forKey:SINGLES_CONTEXT];
+    }
+    
+    if([albums count] > 0){
+        [oTracks setObject:albums forKey:ALBUM_CONTEXT];
+    }
+    return oTracks;
+}
+- (void) setFromPlaylist: (NSString *) fromPlaylist andToPlaylistSingles: (NSString *) singlesPlaylist andToPlaylistAlbums: (NSString *) albumsPlaylist
+andMinTracks: (int) minTracks andMaxAlbums: (int) maxAlbums
+{
+    self.runData.toPlaylistSingles = singlesPlaylist;
+    self.runData.toPlaylistAlbums = albumsPlaylist;
+    self.runData.fromPlaylist = fromPlaylist;
+    self.runData.maxAlbumsToProcess = maxAlbums;
+    self.runData.minTracksPerAlbum = minTracks;
 }
 
--(void) clearPlaylistWithName: (NSString *) playlistName
+-(void) clearPlaylistWithName: (NSString *) playlistName andContext: (NSString *) context
 {
     iTunesUserPlaylist *playlist = [self getPlaylistWithName:playlistName];
     if(playlist != nil){
-        [self clearPlaylist:playlist];
+        [self clearPlaylist:playlist andContext:context];
     }
 }
 
-- (void) clearPlaylist: (iTunesPlaylist *) playlist
+- (void) clearPlaylist: (iTunesPlaylist *) playlist andContext: (NSString *) context
 {
     SBElementArray *tracks = [playlist tracks];
     int trackCount = [tracks count];
 
-    int deletedCount =0;
+    int deletedCount = 0;
     // have to delete backwards because they shift up
     for(int i = trackCount; i>=0; i--){
         iTunesTrack *track = [tracks objectAtIndex:i];
         [track delete];
         deletedCount++;
-    }  
-    DLog(@"%d tracks deleted", deletedCount);
+    } 
+    
+    if(context == ALBUM_CONTEXT){
+        self.runData.albumTracksDeleted = deletedCount;
+    } else if(context == ALBUM_CONTEXT){
+        self.runData.singleTracksDeleted = deletedCount;
+    }
+    NSString *message = [NSString stringWithFormat:@"%d tracks deleted", deletedCount];
+    [self.runData logMessage:message];
 }
 
-- (void) moveSinglesTo: (NSString *) toPlaylistNameSingles andAlbumsTo: (NSString *)toPlaylistNameAlbums FromDictionary: (NSMutableDictionary *)albums andMinTracks:(int) minTracks andMaxAlbums: (int) maxAlbums
+- (void) moveTracksFromDictionary: (NSDictionary *) albums 
 {
-    if(albums == nil) return;
+    [self moveSinglesTo:self.runConfig.toPlaylistSingles andAlbumsTo:self.runConfig.toPlaylistAlbums FromDictionary:albums andMinTracks:self.runConfig.minTracksPerAlbum andMaxAlbums:self.runConfig.maxAlbumsToProcess];
+}
+
+- (void) moveSinglesTo: (NSString *) toPlaylistNameSingles andAlbumsTo: (NSString *)toPlaylistNameAlbums FromDictionary: (NSDictionary *) allTracks andMinTracks:(int) minTracks andMaxAlbums: (int) maxAlbums
+{
+    if(allTracks == nil) return;
     
-    NSMutableArray *singles = [albums objectForKey:NON_ALBUM_TITLE]; 
-    DLog(@"original singles count: %lu", [singles count]);
-    [albums removeObjectForKey:NON_ALBUM_TITLE];
+    NSMutableArray *singles = [allTracks objectForKey:SINGLES_CONTEXT]; 
+    NSString *message = [NSString stringWithFormat:@"original singles count: %lu", [singles count]];
+    [self.runData logMessage:message];
+    NSDictionary *albums = [allTracks objectForKey:ALBUM_CONTEXT];
     
     // handle albums
-    int albumTrackCount = 0;
-    int albumCount = 0;
-    int singlesCount = 0;
-    int totalAlbums = [albums count];
+    self.runData.totalAlbums = [albums count];
     bool skipAlbums = false;
     if(toPlaylistNameAlbums != nil){
         iTunesUserPlaylist *albumsPlaylist = [self getPlaylistWithName:toPlaylistNameAlbums];
         if(albumsPlaylist != nil){
             for(NSString *albumTitle in albums){
-                if(albumCount > maxAlbums){
+                if(self.runData.albumsProcessed > maxAlbums){
                     skipAlbums = YES;
                 }
 
                 NSArray *album = [albums objectForKey:albumTitle];
-                int currentAlbumTrackCount = [album count];
-                //DLog(@"Working on album: %@", albumTitle);                
-                
-                if(!skipAlbums && currentAlbumTrackCount >= minTracks){
-                    //DLog(@"skipping album: %@ for having %lu songs when %d are required", albumTitle, [albumTracks count], minTracks);
-                    albumTrackCount += [self addSongs:album toPlayList:albumsPlaylist andIdentifier:@"there"];
-                    albumCount++;
+                if([album count] >= minTracks){
+                    if(!skipAlbums){
+                        self.runData.totalAlbumTracksAdded += [self addSongs:album toPlayList:albumsPlaylist andIdentifier:@"there"];
+                        self.runData.albumsProcessed++;
+                    }
                 } else {
-                    //singlesCount += [self addSongs:albumTracks toPlayList:singlesPlaylist andIdentifier:@"here"];
+                    //DLog(@"skipping album: %@ for having %lu songs when %d are required", albumTitle, [albumTracks count], minTracks);
                     [singles addObjectsFromArray:album];
                 }   
             }
@@ -149,12 +231,15 @@ NSString * const NON_ALBUM_TITLE = @"__NO_WAY_AN_ALBUM_WILL_BE_NAMED_THIS";
     }
     
     // handle singles
-    DLog(@"new singles count: %lu", [singles count]);
+    message = [NSString stringWithFormat:@"new singles count: %lu", [singles count]];
+    [self.runData logMessage:message];
     if(singlesPlaylist != nil && singles != nil){
-        singlesCount += [self addSongs:singles toPlayList:singlesPlaylist andIdentifier:@"singles"];
+        self.runData.totalSinglesTracksAdded += [self addSongs:singles toPlayList:singlesPlaylist andIdentifier:@"singles"];
     }
-    DLog(@"\n%d albums (out of %d total) added with %d songs to %@", albumCount, totalAlbums, albumTrackCount, toPlaylistNameAlbums);
-    DLog(@"%d singles added to %@", singlesCount, toPlaylistNameSingles);
+    message = [NSString stringWithFormat:@"%d albums (out of %d total) added with %d songs to %@", self.runData.albumsProcessed, self.runData.totalAlbums, self.runData.totalAlbumTracksAdded, toPlaylistNameAlbums];
+    [self.runData logMessage:message];
+    message = [NSString stringWithFormat:@"%d singles added to %@", self.runData.totalSinglesTracksAdded, toPlaylistNameSingles];
+    [self.runData logMessage:message];
 }
 
 - (int) addSongs: (NSArray *) albumTracks toPlayList: (iTunesPlaylist *) playlist andIdentifier: (NSString *) ident
@@ -162,7 +247,7 @@ NSString * const NON_ALBUM_TITLE = @"__NO_WAY_AN_ALBUM_WILL_BE_NAMED_THIS";
     int count = 0;
     if([ident isEqualToString:@"singles"]){
         albumTracks = [albumTracks sortedArrayUsingComparator:^NSComparisonResult(iTunesTrack *t1, iTunesTrack *t2) {
-            return [t1 dateAdded] > [t2 dateAdded];
+            return [t1 dateAdded] < [t2 dateAdded];
         }];
     } else {
         albumTracks = [albumTracks sortedArrayUsingComparator:^NSComparisonResult(iTunesTrack *t1, iTunesTrack *t2) {

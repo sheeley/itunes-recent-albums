@@ -11,6 +11,7 @@ I keep a playlist of 500 songs, sorted from most recently added (Recently Added)
  - Filter playlists so only user-created may be used as target
  - Clear playlists before copying tracks (if desired)
  - Filter tracks by requiring a certain number of tracks per album
+ - Saves preferences
 
 ## Outstanding bugs
  - UI sucks. I'm new to this. It'll get better.
@@ -20,3 +21,8 @@ I keep a playlist of 500 songs, sorted from most recently added (Recently Added)
  - Run in tray
  - Schedule runs
  - Filter out albums via user input
+ - Create playlists in app
+ - Refresh playlists 
+ - Release on app store
+ - Output showing # albums/songs processed
+ - Fix current bug with not running properly

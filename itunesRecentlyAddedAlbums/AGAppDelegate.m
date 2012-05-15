@@ -10,22 +10,12 @@
 
 @implementation AGAppDelegate
 
-NSString * const SETTINGS_KEY = @"settings";
-NSString * const NO_PLAYLIST = @"No playlist";
-NSString * const SOURCE_PLAYLIST = @"SOURCE";
-NSString * const TO_ALBUM_PLAYLIST = @"TO_ALBUM";
-NSString * const TO_SINGLE_PLAYLIST = @"TO_SINGLE";
-NSString * const CLEAR_TO_SINGLE_PLAYLIST = @"TO_SINGLE_CLEAR";
-NSString * const CLEAR_TO_ALBUM_PLAYLIST = @"TO_ALBUM_CLEAR";
-NSString * const MAX_ALBUMS = @"MAX_ALBUMS";
-NSString * const MIN_SONGS_PER_ALBUM = @"MIN_SONGS";
-
 @synthesize window = _window, agItunes,
 minSongPopUp, toPlaylistSinglesPopUp, toPlaylistAlbumsPopUp, 
 fromPlaylistPopUp, maxAlbumPopUp, outputField,
-clearAlbumsPlaylistButton, clearSinglesPlaylistButton;
+clearAlbumsPlaylistButton, clearSinglesPlaylistButton, runTimer, progress;
 
-- (void)applicationDidFinishLaunching:(NSNotification *)aNotification
+- (void) applicationDidFinishLaunching:(NSNotification *)aNotification
 {
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     if ([defaults objectForKey:SETTINGS_KEY] == nil){
@@ -43,90 +33,37 @@ clearAlbumsPlaylistButton, clearSinglesPlaylistButton;
     [self loadSettings];
 }
 
-- (void) populateForm
-{
-    SBElementArray *availablePlaylists = [self.agItunes getItunesPlaylists];
-    
-    [self.toPlaylistSinglesPopUp insertItemWithTitle:NO_PLAYLIST atIndex:0];
-    [self.toPlaylistAlbumsPopUp insertItemWithTitle:NO_PLAYLIST atIndex:0];
-    [self.fromPlaylistPopUp insertItemWithTitle:NO_PLAYLIST atIndex:0];
-    int i = 1, ix = 1;
-    if(availablePlaylists != nil){
-        for(iTunesUserPlaylist *playlist in availablePlaylists){
-            if([playlist specialKind] == iTunesESpKNone && ![playlist smart]){
-                [self.toPlaylistSinglesPopUp insertItemWithTitle:[playlist name] atIndex:i];
-                [self.toPlaylistAlbumsPopUp insertItemWithTitle:[playlist name] atIndex:i];
-                i++;
-            }            
-            
-            [self.fromPlaylistPopUp insertItemWithTitle:[playlist name] atIndex:ix];
-            ix++;
-        }
-    }
-    
-    for(i = 0; i<11; i++){
-        NSString *is = [NSString stringWithFormat:@"%d", (i+2)];
-        [self.maxAlbumPopUp insertItemWithTitle:is atIndex:i];
-    }
-    
-    for(i = 0; i<9; i++){
-        NSString *is = [NSString stringWithFormat:@"%d", (i+2)];
-        [self.minSongPopUp insertItemWithTitle:is atIndex:i];
-    }
-}
-
--(NSString *) getPlayListName: (NSPopUpButton *) button
-{
-    NSString *name = [button titleOfSelectedItem];
-    if([name length] == 0){
-        name = nil;
-    }
-    return nil;
-}
-
--(IBAction)arrangeTracks:(id)sender
+- (IBAction) arrangeTracks: (id) sender
 {
     [self saveSettings];
-    NSString *fromPlaylistName = [self.fromPlaylistPopUp titleOfSelectedItem];
-    NSString *toPlaylistNameSingles = [self.toPlaylistSinglesPopUp titleOfSelectedItem];
-    NSString *toPlaylistNameAlbums = [self.toPlaylistAlbumsPopUp titleOfSelectedItem];
-    int minTracks = (int) [[self.minSongPopUp titleOfSelectedItem] doubleValue];
-    int maxAlbums = (int) [[self.maxAlbumPopUp titleOfSelectedItem] doubleValue];
-    bool doClearSinglesPlaylist = [self.clearSinglesPlaylistButton state] == NSOnState;
-    bool doClearAlbumsPlaylist = [self.clearAlbumsPlaylistButton state] == NSOnState;
-
-    if (![self validateFromPlaylist:fromPlaylistName andToSinglesName:toPlaylistNameSingles andToAlbumsName:toPlaylistNameAlbums andMinSongs:minTracks andMaxAlbums:maxAlbums]) {
-        DLog(@"%@, %@, %@, %d, %d", fromPlaylistName, toPlaylistNameSingles, toPlaylistNameAlbums, minTracks, maxAlbums);
-        return;
-    }
-                 
-    NSDictionary *tracks = [self.agItunes getSongsFromPlaylist:fromPlaylistName];
-    if(tracks == nil){
-        // from playlist doesn't exist
-        DLog(@"playlist %@ doesn't seem to exist", fromPlaylistName);
-    } else if([tracks count] == 0){
-        // no tracks or tracks with no albums in the playlist
-        DLog(@"playlist %@ seems to be empty", fromPlaylistName);
-    } else {
-        if(doClearSinglesPlaylist && toPlaylistNameSingles != nil){
-            [self.agItunes clearPlaylistWithName:toPlaylistNameSingles];
-        }
-        if(doClearAlbumsPlaylist && toPlaylistNameAlbums != nil){
-            [self.agItunes clearPlaylistWithName:toPlaylistNameAlbums];            
-        }
-        [self.agItunes moveSinglesTo:toPlaylistNameSingles andAlbumsTo:toPlaylistNameAlbums FromDictionary:tracks andMinTracks:minTracks andMaxAlbums:maxAlbums];
-        [[self.agItunes getItunes] activate];
-    }
+    [self.progress startAnimation:self];
+    AGRunConfig *config = [self getRunConfig];
+    AGItunes *_agItunes = [[AGItunes alloc] initWithConfig:config];
+    AGRunData *output = [_agItunes arrangeSongs];
+    [self.progress stopAnimation:self];
+    DLog(@"albums processed %d, errors: %@, messages: %@", output.albumsProcessed, output.errorMessages, output.messages);
+    // update UI with output;
 }
 
--(bool) validateFromPlaylist: (NSString *) fromName andToSinglesName: (NSString *) toSinglesName andToAlbumsName: (NSString *) toAlbumsName andMinSongs: (int) minSongs andMaxAlbums: (int) maxAlbums
+- (AGRunConfig *) getRunConfig
 {
-    bool valid = true;
-    if(fromName == NO_PLAYLIST || (toSinglesName ==  NO_PLAYLIST && toAlbumsName == NO_PLAYLIST) || minSongs == 0 || maxAlbums == 0){
-        DLog(@"problems - invalid inputs");
-        valid = false;
-    }
-    return valid;
+    AGRunConfig *config = [[AGRunConfig alloc] init];
+    config.fromPlaylist = [self.fromPlaylistPopUp titleOfSelectedItem];
+    config.toPlaylistSingles = [self.toPlaylistSinglesPopUp titleOfSelectedItem];
+    config.toPlaylistAlbums = [self.toPlaylistAlbumsPopUp titleOfSelectedItem];
+    config.minTracksPerAlbum = (int)[[self.minSongPopUp titleOfSelectedItem] doubleValue];
+    config.maxAlbumsToProcess = (int)[[self.maxAlbumPopUp titleOfSelectedItem] doubleValue];
+    config.doClearSinglesPlaylist = ([self.clearSinglesPlaylistButton state] == NSOnState) ? @"YES" : @"NO";
+    config.doClearAlbumsPlaylist = ([self.clearAlbumsPlaylistButton state] == NSOnState) ? @"YES" : @"NO";
+    config.maxTracksToIngest = 1000;
+    return config;
+}
+
+- (IBAction) refreshPlaylists: (id) sender
+{
+    [self saveSettings];
+    [self populateForm];
+    [self loadSettings];
 }
 
 -(void) saveSettings
@@ -147,11 +84,10 @@ clearAlbumsPlaylistButton, clearSinglesPlaylistButton;
     [[NSUserDefaults standardUserDefaults] setValue:formData forKey:SETTINGS_KEY];
     [[NSUserDefaults standardUserDefaults] synchronize];
 }
-
--(void)loadSettings
+ 
+- (void) loadSettings
 {
     NSDictionary *settings = [[NSUserDefaults standardUserDefaults] objectForKey:SETTINGS_KEY];
-    DLog(@"settings %@", settings);
     if(settings != nil){
         NSString *fromPlaylistName = [settings objectForKey:SOURCE_PLAYLIST];
         NSString *toPlaylistNameSingles = [settings objectForKey:TO_SINGLE_PLAYLIST];
@@ -172,11 +108,35 @@ clearAlbumsPlaylistButton, clearSinglesPlaylistButton;
     }
 }
 
--(void) log: (NSString *) logString
+- (void) populateForm
 {
-    DLog(@"%@", logString);
-    [self.outputField setStringValue:logString];
+    SBElementArray *availablePlaylists = [self.agItunes getItunesPlaylists];
+    
+    [self.toPlaylistSinglesPopUp insertItemWithTitle:NO_PLAYLIST atIndex:0];
+    [self.toPlaylistAlbumsPopUp insertItemWithTitle:NO_PLAYLIST atIndex:0];
+    [self.fromPlaylistPopUp insertItemWithTitle:NO_PLAYLIST atIndex:0];
+    int i = 1, ix = 1;
+    if(availablePlaylists != nil){
+        for(iTunesUserPlaylist *playlist in availablePlaylists){
+            if([playlist specialKind] == iTunesESpKNone && ![playlist smart]){
+                [self.toPlaylistSinglesPopUp insertItemWithTitle:[playlist name] atIndex:i];
+                [self.toPlaylistAlbumsPopUp insertItemWithTitle:[playlist name] atIndex:i];
+                i++;
+            }            
+            [self.fromPlaylistPopUp insertItemWithTitle:[playlist name] atIndex:ix];
+            ix++;
+        }
+    }
+    
+    for(i = 0; i<11; i++){
+        NSString *is = [NSString stringWithFormat:@"%d", (i+2)];
+        [self.maxAlbumPopUp insertItemWithTitle:is atIndex:i];
+    }
+    
+    for(i = 0; i<9; i++){
+        NSString *is = [NSString stringWithFormat:@"%d", (i+2)];
+        [self.minSongPopUp insertItemWithTitle:is atIndex:i];
+    }
 }
-
 
 @end
