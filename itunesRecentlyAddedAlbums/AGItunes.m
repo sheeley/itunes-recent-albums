@@ -241,7 +241,6 @@ andMinTracks: (int) minTracks andMaxAlbums: (int) maxAlbums
             self.runData.totalSinglesTracksAdded += [self addSongs:singles toPlayList:singlesPlaylist andIdentifier:@"singles"];
         }
     }
-    
 
     message = [NSString stringWithFormat:@"%d albums (out of %d total) added with %d songs to %@", self.runData.albumsProcessed, self.runData.totalAlbums, self.runData.totalAlbumTracksAdded, toPlaylistNameAlbums];
     [self.runData logMessage:message];
@@ -258,9 +257,13 @@ andMinTracks: (int) minTracks andMaxAlbums: (int) maxAlbums
         }];
     } else {
         albumTracks = [albumTracks sortedArrayUsingComparator:^NSComparisonResult(iTunesTrack *t1, iTunesTrack *t2) {
-            NSString *t1c = ([t1 trackNumber] != 0) ? [NSString stringWithFormat:@"%d",[t1 trackNumber]] : [t1 name];
-            NSString *t2c = ([t2 trackNumber] != 0) ? [NSString stringWithFormat:@"%d",[t2 trackNumber] ]: [t2 name];
-            return t1c > t2c;
+            if([t1 trackNumber] != 0 && [t2 trackNumber] != 0){
+                return [t1 trackNumber] > [t2 trackNumber];
+            } else {
+                NSString *t1c = ([t1 trackNumber] != 0) ? [NSString stringWithFormat:@"%d",[t1 trackNumber]] : [t1 name];
+                NSString *t2c = ([t2 trackNumber] != 0) ? [NSString stringWithFormat:@"%d",[t2 trackNumber] ]: [t2 name];
+                return [t1c compare:t2c];
+            }
         }];
     }
     
