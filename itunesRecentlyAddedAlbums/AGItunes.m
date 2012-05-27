@@ -109,7 +109,6 @@
     for(iTunesTrack *track in tracks){
         if(self.runData.tracksIngested > self.runConfig.maxTracksToIngest){
             message = [NSString stringWithFormat:@"Hit %d tracks, done reading", self.runConfig.maxTracksToIngest];
-            //DLog(@"%@", message);
             [self.runData logMessage:message];
             break;
         }
@@ -221,11 +220,9 @@ andMinTracks: (int) minTracks andMaxAlbums: (int) maxAlbums
             }];
             for(iTunesTrack *track in sortedAlbumKeys){
                 NSArray *album = [albums objectForKey:[track album]];
-                NSLog(@"%@", [track album]);
                 self.runData.totalAlbumTracksAdded += [self addSongs:album toPlayList:albumsPlaylist andIdentifier:@"there"];
                 self.runData.albumsProcessed++;
                 if(self.runData.albumsProcessed > maxAlbums){
-                    NSLog(@"BREAKIN' SON");
                     break;
                 }
             }
