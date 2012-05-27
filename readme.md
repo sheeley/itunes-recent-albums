@@ -26,3 +26,4 @@ I keep a playlist of 500 songs, sorted from most recently added (Recently Added)
  - Refresh playlists 
  - Release on app store
  - Output showing # albums/songs processed
+ - Track playlist by id rather than name?

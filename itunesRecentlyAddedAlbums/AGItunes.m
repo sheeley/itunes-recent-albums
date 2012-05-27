@@ -216,7 +216,7 @@ andMinTracks: (int) minTracks andMaxAlbums: (int) maxAlbums
         iTunesUserPlaylist *albumsPlaylist = [self getPlaylistWithName:toPlaylistNameAlbums];
         if(albumsPlaylist != nil){
             NSArray *sortedAlbumKeys = [albumKeys sortedArrayUsingComparator:^NSComparisonResult(iTunesTrack *t1, iTunesTrack *t2) {
-                return [[t1 dateAdded] compare: [t2 dateAdded]];;
+                return [[t2 dateAdded] compare: [t1 dateAdded]];
             }];
             for(iTunesTrack *track in sortedAlbumKeys){
                 NSArray *album = [albums objectForKey:[track album]];
@@ -250,7 +250,7 @@ andMinTracks: (int) minTracks andMaxAlbums: (int) maxAlbums
     int count = 0;
     if([ident isEqualToString:@"singles"]){
         albumTracks = [albumTracks sortedArrayUsingComparator:^NSComparisonResult(iTunesTrack *t1, iTunesTrack *t2) {
-            return [[t1 dateAdded] compare: [t2 dateAdded]];
+            return [[t2 dateAdded] compare: [t1 dateAdded]];
         }];
     } else {
         albumTracks = [albumTracks sortedArrayUsingComparator:^NSComparisonResult(iTunesTrack *t1, iTunesTrack *t2) {

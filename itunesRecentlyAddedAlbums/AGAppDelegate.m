@@ -42,7 +42,7 @@ runTimer, spinner;
         [self saveSettings];
         AGRunConfig *config = [self getRunConfig];
         AGItunes *_agItunes = [[AGItunes alloc] initWithConfig:config];
-        AGRunData *output = [_agItunes arrangeSongs];
+        __block AGRunData *output = [_agItunes arrangeSongs];
         dispatch_async(dispatch_get_main_queue(), ^{
             [sender setEnabled:YES];
             [self.spinner stopAnimation:sender];
