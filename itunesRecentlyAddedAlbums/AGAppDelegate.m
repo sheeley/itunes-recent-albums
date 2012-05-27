@@ -13,7 +13,8 @@
 @synthesize window = _window, agItunes,
 minSongPopUp, toPlaylistSinglesPopUp, toPlaylistAlbumsPopUp, 
 fromPlaylistPopUp, maxAlbumPopUp, outputField,
-clearAlbumsPlaylistButton, clearSinglesPlaylistButton, runTimer, progress;
+clearAlbumsPlaylistButton, clearSinglesPlaylistButton, 
+runTimer, spinner;
 
 - (void) applicationDidFinishLaunching:(NSNotification *)aNotification
 {
@@ -30,19 +31,32 @@ clearAlbumsPlaylistButton, clearSinglesPlaylistButton, runTimer, progress;
     
     self.agItunes = [[AGItunes alloc] init];    
     [self populateForm];
-    [self loadSettings];
 }
 
 - (IBAction) arrangeTracks: (id) sender
 {
+    [sender setEnabled:NO];
+    [self.spinner startAnimation:sender];
+    dispatch_queue_t queue = dispatch_queue_create("music processing", NULL);
+    dispatch_async(queue, ^{
+        [self saveSettings];
+        AGRunConfig *config = [self getRunConfig];
+        AGItunes *_agItunes = [[AGItunes alloc] initWithConfig:config];
+        AGRunData *output = [_agItunes arrangeSongs];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [sender setEnabled:YES];
+            [self.spinner stopAnimation:sender];
+            DLog(@"albums processed %d, errors: %@, messages: %@", output.albumsProcessed, output.errorMessages, output.messages);
+            // update UI with output;
+        });        
+    });
+    dispatch_release(queue);
+}
+
+- (IBAction) refreshPlaylists: (id) sender
+{
     [self saveSettings];
-    [self.progress startAnimation:self];
-    AGRunConfig *config = [self getRunConfig];
-    AGItunes *_agItunes = [[AGItunes alloc] initWithConfig:config];
-    AGRunData *output = [_agItunes arrangeSongs];
-    [self.progress stopAnimation:self];
-    DLog(@"albums processed %d, errors: %@, messages: %@", output.albumsProcessed, output.errorMessages, output.messages);
-    // update UI with output;
+    [self populateForm];
 }
 
 - (AGRunConfig *) getRunConfig
@@ -57,13 +71,6 @@ clearAlbumsPlaylistButton, clearSinglesPlaylistButton, runTimer, progress;
     config.doClearAlbumsPlaylist = ([self.clearAlbumsPlaylistButton state] == NSOnState) ? @"YES" : @"NO";
     config.maxTracksToIngest = 1000;
     return config;
-}
-
-- (IBAction) refreshPlaylists: (id) sender
-{
-    [self saveSettings];
-    [self populateForm];
-    [self loadSettings];
 }
 
 -(void) saveSettings
@@ -110,33 +117,48 @@ clearAlbumsPlaylistButton, clearSinglesPlaylistButton, runTimer, progress;
 
 - (void) populateForm
 {
-    SBElementArray *availablePlaylists = [self.agItunes getItunesPlaylists];
-    
-    [self.toPlaylistSinglesPopUp insertItemWithTitle:NO_PLAYLIST atIndex:0];
-    [self.toPlaylistAlbumsPopUp insertItemWithTitle:NO_PLAYLIST atIndex:0];
-    [self.fromPlaylistPopUp insertItemWithTitle:NO_PLAYLIST atIndex:0];
-    int i = 1, ix = 1;
-    if(availablePlaylists != nil){
-        for(iTunesUserPlaylist *playlist in availablePlaylists){
-            if([playlist specialKind] == iTunesESpKNone && ![playlist smart]){
-                [self.toPlaylistSinglesPopUp insertItemWithTitle:[playlist name] atIndex:i];
-                [self.toPlaylistAlbumsPopUp insertItemWithTitle:[playlist name] atIndex:i];
-                i++;
-            }            
-            [self.fromPlaylistPopUp insertItemWithTitle:[playlist name] atIndex:ix];
-            ix++;
+    dispatch_queue_t queue = dispatch_queue_create("music processing", NULL);
+    [self.spinner startAnimation:nil];
+    dispatch_async(queue, ^{
+        SBElementArray *availablePlaylists = [self.agItunes getItunesPlaylists];
+        
+        [self.toPlaylistSinglesPopUp insertItemWithTitle:NO_PLAYLIST atIndex:0];
+        [self.toPlaylistAlbumsPopUp insertItemWithTitle:NO_PLAYLIST atIndex:0];
+        [self.fromPlaylistPopUp insertItemWithTitle:NO_PLAYLIST atIndex:0];
+        int i = 1, ix = 1;
+        if(availablePlaylists != nil){
+            for(iTunesUserPlaylist *playlist in availablePlaylists){
+                if([playlist specialKind] == iTunesESpKNone && ![playlist smart]){
+                    [self.toPlaylistSinglesPopUp insertItemWithTitle:[playlist name] atIndex:i];
+                    [self.toPlaylistAlbumsPopUp insertItemWithTitle:[playlist name] atIndex:i];
+                    i++;
+                }            
+                [self.fromPlaylistPopUp insertItemWithTitle:[playlist name] atIndex:ix];
+                ix++;
+            }
         }
-    }
+        
+        for(i = 0; i<11; i++){
+            NSString *is = [NSString stringWithFormat:@"%d", (i+2)];
+            [self.maxAlbumPopUp insertItemWithTitle:is atIndex:i];
+        }
+        
+        for(i = 0; i<9; i++){
+            NSString *is = [NSString stringWithFormat:@"%d", (i+2)];
+            [self.minSongPopUp insertItemWithTitle:is atIndex:i];
+        }
+
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self loadSettings];
+            [self.spinner stopAnimation:nil];
+        });        
+    });
+    dispatch_release(queue);
+}
+
+- (void) updateOutput: (AGRunData *) runData
+{
     
-    for(i = 0; i<11; i++){
-        NSString *is = [NSString stringWithFormat:@"%d", (i+2)];
-        [self.maxAlbumPopUp insertItemWithTitle:is atIndex:i];
-    }
-    
-    for(i = 0; i<9; i++){
-        NSString *is = [NSString stringWithFormat:@"%d", (i+2)];
-        [self.minSongPopUp insertItemWithTitle:is atIndex:i];
-    }
 }
 
 @end

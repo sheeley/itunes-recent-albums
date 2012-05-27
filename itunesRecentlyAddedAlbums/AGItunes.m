@@ -199,43 +199,50 @@ andMinTracks: (int) minTracks andMaxAlbums: (int) maxAlbums
     NSString *message = [NSString stringWithFormat:@"original singles count: %lu", [singles count]];
     [self.runData logMessage:message];
     NSDictionary *albums = [allTracks objectForKey:ALBUM_CONTEXT];
-    
-    // handle albums
+    NSMutableArray *albumKeys = [[NSMutableArray alloc] init];
     self.runData.totalAlbums = [albums count];
-    bool skipAlbums = false;
+    
+    // split albums from singles
+    for(NSString *albumTitle in albums){
+        NSArray *album = [albums objectForKey:albumTitle];
+        if([album count] >= minTracks){
+            [albumKeys addObject:[album objectAtIndex:0]];
+        } else {
+            [singles addObjectsFromArray:album];
+        }   
+    }
+    
+    // handle albums    
     if(toPlaylistNameAlbums != nil){
         iTunesUserPlaylist *albumsPlaylist = [self getPlaylistWithName:toPlaylistNameAlbums];
         if(albumsPlaylist != nil){
-            for(NSString *albumTitle in albums){
+            NSArray *sortedAlbumKeys = [albumKeys sortedArrayUsingComparator:^NSComparisonResult(iTunesTrack *t1, iTunesTrack *t2) {
+                return [[t1 dateAdded] compare: [t2 dateAdded]];;
+            }];
+            for(iTunesTrack *track in sortedAlbumKeys){
+                NSArray *album = [albums objectForKey:[track album]];
+                NSLog(@"%@", [track album]);
+                self.runData.totalAlbumTracksAdded += [self addSongs:album toPlayList:albumsPlaylist andIdentifier:@"there"];
+                self.runData.albumsProcessed++;
                 if(self.runData.albumsProcessed > maxAlbums){
-                    skipAlbums = YES;
+                    NSLog(@"BREAKIN' SON");
+                    break;
                 }
-
-                NSArray *album = [albums objectForKey:albumTitle];
-                if([album count] >= minTracks){
-                    if(!skipAlbums){
-                        self.runData.totalAlbumTracksAdded += [self addSongs:album toPlayList:albumsPlaylist andIdentifier:@"there"];
-                        self.runData.albumsProcessed++;
-                    }
-                } else {
-                    //DLog(@"skipping album: %@ for having %lu songs when %d are required", albumTitle, [albumTracks count], minTracks);
-                    [singles addObjectsFromArray:album];
-                }   
             }
         }
     }
-    
-    iTunesUserPlaylist *singlesPlaylist = nil;
-    if(toPlaylistNameSingles != nil){
-        singlesPlaylist = [self getPlaylistWithName:toPlaylistNameSingles];
-    }
-    
+
     // handle singles
-    message = [NSString stringWithFormat:@"new singles count: %lu", [singles count]];
-    [self.runData logMessage:message];
-    if(singlesPlaylist != nil && singles != nil){
-        self.runData.totalSinglesTracksAdded += [self addSongs:singles toPlayList:singlesPlaylist andIdentifier:@"singles"];
+    if(toPlaylistNameSingles != nil){
+        message = [NSString stringWithFormat:@"new singles count: %lu", [singles count]];
+        [self.runData logMessage:message];
+        iTunesUserPlaylist *singlesPlaylist = [self getPlaylistWithName:toPlaylistNameSingles];
+        if(singlesPlaylist != nil && singles != nil){
+            self.runData.totalSinglesTracksAdded += [self addSongs:singles toPlayList:singlesPlaylist andIdentifier:@"singles"];
+        }
     }
+    
+
     message = [NSString stringWithFormat:@"%d albums (out of %d total) added with %d songs to %@", self.runData.albumsProcessed, self.runData.totalAlbums, self.runData.totalAlbumTracksAdded, toPlaylistNameAlbums];
     [self.runData logMessage:message];
     message = [NSString stringWithFormat:@"%d singles added to %@", self.runData.totalSinglesTracksAdded, toPlaylistNameSingles];
@@ -247,7 +254,7 @@ andMinTracks: (int) minTracks andMaxAlbums: (int) maxAlbums
     int count = 0;
     if([ident isEqualToString:@"singles"]){
         albumTracks = [albumTracks sortedArrayUsingComparator:^NSComparisonResult(iTunesTrack *t1, iTunesTrack *t2) {
-            return [t1 dateAdded] < [t2 dateAdded];
+            return [[t1 dateAdded] compare: [t2 dateAdded]];
         }];
     } else {
         albumTracks = [albumTracks sortedArrayUsingComparator:^NSComparisonResult(iTunesTrack *t1, iTunesTrack *t2) {

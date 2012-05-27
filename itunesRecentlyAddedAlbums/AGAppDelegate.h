@@ -19,7 +19,8 @@
     IBOutlet NSTextField *outputField;
     IBOutlet NSButton *clearSinglesPlaylistButton;
     IBOutlet NSButton *clearAlbumsPlaylistButton;
-    IBOutlet NSProgressIndicator *progress;
+    IBOutlet NSProgressIndicator *spinner;
+    //IBOutlet NSButton *goButton;
 
     /* NSStatusbar NSStatusItem NSTimer */
 }
@@ -37,7 +38,8 @@
 @property (nonatomic, retain) IBOutlet NSTextField *outputField;
 @property (nonatomic, retain) IBOutlet NSButton *clearSinglesPlaylistButton;
 @property (nonatomic, retain) IBOutlet NSButton *clearAlbumsPlaylistButton;
-@property (nonatomic, retain) IBOutlet NSProgressIndicator *progress;
+@property (nonatomic, retain) IBOutlet NSProgressIndicator *spinner;
+//@property (nonatomic, retain) IBOutlet NSButton *goButton;
 
 - (IBAction) arrangeTracks: (id) sender;
 - (AGRunConfig *) getRunConfig;
