@@ -59,8 +59,8 @@
     return [playlists objectWithName:playlistName];
 }
 
-- (AGRunData *) arrangeSongs
-{
+- (AGRunData *) arrangeSongsUpdateUIWithBlock: (void (^)(AGRunData *output))block
+{    
     if(runConfig == nil /*|| ![runConfig isValid]*/){
         return nil;
     }
@@ -72,6 +72,7 @@
     self.runData.startTime = [[NSDate alloc] init];
     
     NSDictionary *tracks = [self getSongsFromPlaylist:fromPlaylistName];
+    block(self.runData);
     if(tracks == nil){
         // from playlist doesn't exist
         NSString *error = [NSString stringWithFormat:@"playlist %@ doesn't seem to exist", fromPlaylistName];
@@ -87,11 +88,13 @@
         if(self.runConfig.doClearAlbumsPlaylist && toPlaylistNameAlbums != nil){
             [self clearPlaylistWithName:toPlaylistNameAlbums andContext:ALBUM_CONTEXT];            
         }
+        block(self.runData);
         [self moveTracksFromDictionary: tracks]; 
-        [[self getItunes] activate];
+        //[[self getItunes] activate];
     }
-    
+
     self.runData.endTime = [[NSDate alloc] init];
+    block(self.runData);
     return self.runData;
 }
 

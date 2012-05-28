@@ -34,7 +34,8 @@
 @property (nonatomic, retain) NSMutableArray *errorMessages;
 @property (nonatomic, retain) NSMutableArray *messages;
 
--(void) logError: (NSString *) message;
--(void) logMessage: (NSString *) message;
+- (void) logError: (NSString *) message;
+- (void) logMessage: (NSString *) message;
+- (NSString *) toString;
 
 @end

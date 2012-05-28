@@ -14,7 +14,7 @@
 minSongPopUp, toPlaylistSinglesPopUp, toPlaylistAlbumsPopUp, 
 fromPlaylistPopUp, maxAlbumPopUp, outputField,
 clearAlbumsPlaylistButton, clearSinglesPlaylistButton, 
-runTimer, spinner;
+runTimer, spinner, timer;
 
 - (void) applicationDidFinishLaunching:(NSNotification *)aNotification
 {
@@ -29,12 +29,12 @@ runTimer, spinner;
         [defaults synchronize];
     }
     
-    self.agItunes = [[AGItunes alloc] init];    
+    self.agItunes = [[AGItunes alloc] init];
     [self populateForm];
 }
 
 - (IBAction) arrangeTracks: (id) sender
-{
+{    
     [sender setEnabled:NO];
     [self.spinner startAnimation:sender];
     dispatch_queue_t queue = dispatch_queue_create("music processing", NULL);
@@ -42,12 +42,14 @@ runTimer, spinner;
         [self saveSettings];
         AGRunConfig *config = [self getRunConfig];
         AGItunes *_agItunes = [[AGItunes alloc] initWithConfig:config];
-        __block AGRunData *output = [_agItunes arrangeSongs];
+        [_agItunes arrangeSongsUpdateUIWithBlock: ^(AGRunData *output) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [self.outputField setStringValue: [output toString]];
+            });
+        }];
         dispatch_async(dispatch_get_main_queue(), ^{
             [sender setEnabled:YES];
             [self.spinner stopAnimation:sender];
-            DLog(@"albums processed %d, errors: %@, messages: %@", output.albumsProcessed, output.errorMessages, output.messages);
-            // update UI with output;
         });        
     });
     dispatch_release(queue);
@@ -156,9 +158,25 @@ runTimer, spinner;
     dispatch_release(queue);
 }
 
-- (void) updateOutput: (AGRunData *) runData
-{
-    
-}
+/*
+ //This will start a repeating timer that will fire every 5 seconds
+ -(IBAction)startTimer {
+ self.timer = [NSTimer scheduledTimerWithTimeInterval:5.0
+ target:self
+ selector:@selector(someAction:)
+ userInfo:nil
+ repeats:YES];
+ }
+ 
+ //The method the timer will call when fired
+ -(void)someAction:(NSTimer *)aTimer {
+ //Do stuff here
+ }
+ 
+ 
+ -(IBAction)stopTimer {
+ [self.timer invalidate];
+ }
+ */
 
 @end

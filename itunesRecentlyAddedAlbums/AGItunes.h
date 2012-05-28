@@ -21,6 +21,6 @@
 - (iTunesApplication *) getItunes;
 - (SBElementArray *) getItunesPlaylists;
 - (iTunesUserPlaylist *) getPlaylistWithName: (NSString *) playlistName;
-- (AGRunData *) arrangeSongs;
+- (AGRunData *) arrangeSongsUpdateUIWithBlock: (void (^)(AGRunData *output))block;
 
 @end

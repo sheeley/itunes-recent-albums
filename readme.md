@@ -13,6 +13,7 @@ I keep a playlist of 500 songs, sorted from most recently added (Recently Added)
  - Filter tracks by requiring a certain number of tracks per album
  - Saves preferences
  - Sorts both tracks and albums by date descending
+ - Output showing # albums/songs processed
 
 ## Outstanding bugs
  - UI sucks. I'm new to this. It'll get better.
@@ -23,7 +24,5 @@ I keep a playlist of 500 songs, sorted from most recently added (Recently Added)
  - Schedule runs
  - Filter out albums via user input
  - Create playlists in app
- - Refresh playlists 
  - Release on app store
- - Output showing # albums/songs processed
  - Track playlist by id rather than name?

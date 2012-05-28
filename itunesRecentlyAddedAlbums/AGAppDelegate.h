@@ -39,6 +39,7 @@
 @property (nonatomic, retain) IBOutlet NSButton *clearSinglesPlaylistButton;
 @property (nonatomic, retain) IBOutlet NSButton *clearAlbumsPlaylistButton;
 @property (nonatomic, retain) IBOutlet NSProgressIndicator *spinner;
+@property (nonatomic, retain) NSTimer *timer;
 //@property (nonatomic, retain) IBOutlet NSButton *goButton;
 
 - (IBAction) arrangeTracks: (id) sender;

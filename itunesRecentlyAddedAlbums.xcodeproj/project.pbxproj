@@ -281,10 +281,11 @@
 		C2006E6F15145CA500FB79E0 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_IDENTITY = "";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "itunesRecentlyAddedAlbums/itunesRecentlyAddedAlbums-Prefix.pch";
 				INFOPLIST_FILE = "itunesRecentlyAddedAlbums/itunesRecentlyAddedAlbums-Info.plist";
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = itunesRecentlyAddedAlbums;
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -292,10 +293,11 @@
 		C2006E7015145CA500FB79E0 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_IDENTITY = "";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "itunesRecentlyAddedAlbums/itunesRecentlyAddedAlbums-Prefix.pch";
 				INFOPLIST_FILE = "itunesRecentlyAddedAlbums/itunesRecentlyAddedAlbums-Info.plist";
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = itunesRecentlyAddedAlbums;
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;

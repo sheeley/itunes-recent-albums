@@ -34,4 +34,26 @@ maxTracksToIngest, minTracksPerAlbum;
     }
 }
 
+- (NSString *) toString
+{
+    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+    //    [dateFormatter setDateStyle:NSDateFormatterMediumStyle];
+    [dateFormatter setDateFormat:@"yyyy-MM-dd HH:mm"];
+    
+    NSString *output = [NSString stringWithFormat:@"Run started: %@\n", [dateFormatter stringFromDate:startTime]];
+    
+    for(NSString *msg in self.messages){
+        output = [output stringByAppendingFormat:@"%@\n", msg];
+    }
+
+    for(NSString *msg in self.errorMessages){
+        output = [output stringByAppendingFormat:@"Error: %@\n", msg];
+    }
+    
+    if(endTime != nil){
+        output = [output stringByAppendingFormat:@"Run ended: %@\n", [dateFormatter stringFromDate:endTime]];
+    }
+    return output;
+}
+
 @end
