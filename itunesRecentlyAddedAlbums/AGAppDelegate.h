@@ -20,9 +20,9 @@
     IBOutlet NSButton *clearSinglesPlaylistButton;
     IBOutlet NSButton *clearAlbumsPlaylistButton;
     IBOutlet NSProgressIndicator *spinner;
-    //IBOutlet NSButton *goButton;
-
-    /* NSStatusbar NSStatusItem NSTimer */
+    IBOutlet NSPopUpButton *repeatButton;
+    IBOutlet NSButton *goButton;
+    IBOutlet NSButton *stopButton;
 }
 
 @property (assign) IBOutlet NSWindow *window;
@@ -40,7 +40,9 @@
 @property (nonatomic, retain) IBOutlet NSButton *clearAlbumsPlaylistButton;
 @property (nonatomic, retain) IBOutlet NSProgressIndicator *spinner;
 @property (nonatomic, retain) NSTimer *timer;
-//@property (nonatomic, retain) IBOutlet NSButton *goButton;
+@property (nonatomic, retain) IBOutlet NSPopUpButton *repeatButton;
+@property (nonatomic, retain) IBOutlet NSButton *goButton;
+@property (nonatomic, retain) IBOutlet NSButton *stopButton;
 
 - (IBAction) arrangeTracks: (id) sender;
 - (AGRunConfig *) getRunConfig;
@@ -48,5 +50,6 @@
 - (void) saveSettings;
 - (void) loadSettings;
 - (void) populateForm;
+- (IBAction)stopRepeat:(id)sender;
 
 @end

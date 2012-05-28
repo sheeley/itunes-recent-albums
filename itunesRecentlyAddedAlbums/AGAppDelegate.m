@@ -14,7 +14,7 @@
 minSongPopUp, toPlaylistSinglesPopUp, toPlaylistAlbumsPopUp, 
 fromPlaylistPopUp, maxAlbumPopUp, outputField,
 clearAlbumsPlaylistButton, clearSinglesPlaylistButton, 
-runTimer, spinner, timer;
+runTimer, spinner, timer, repeatButton, goButton, stopButton;
 
 - (void) applicationDidFinishLaunching:(NSNotification *)aNotification
 {
@@ -23,7 +23,7 @@ runTimer, spinner, timer;
         NSDictionary *defaultSettings = [[NSDictionary alloc] initWithObjectsAndKeys:@"Music", SOURCE_PLAYLIST,
                                          NO_PLAYLIST, TO_ALBUM_PLAYLIST, NO_PLAYLIST, TO_SINGLE_PLAYLIST, @"5",
                                          MIN_SONGS_PER_ALBUM, @"10", MAX_ALBUMS, @"YES", CLEAR_TO_ALBUM_PLAYLIST, 
-                                         @"YES", CLEAR_TO_SINGLE_PLAYLIST, nil];
+                                         @"YES", CLEAR_TO_SINGLE_PLAYLIST, @"Never", REPEAT_ARRANGEMENT, nil];
         NSDictionary *domain = [[NSDictionary alloc] initWithObjectsAndKeys:defaultSettings, SETTINGS_KEY, nil];
         [defaults registerDefaults:domain];
         [defaults synchronize];
@@ -35,8 +35,14 @@ runTimer, spinner, timer;
 
 - (IBAction) arrangeTracks: (id) sender
 {    
-    [sender setEnabled:NO];
-    [self.spinner startAnimation:sender];
+    [self arrangeTracks];
+}
+
+- (void) arrangeTracks
+{
+    [self.goButton setEnabled:NO];
+    [self toggleTimer];
+    [self.spinner startAnimation:self.goButton];
     dispatch_queue_t queue = dispatch_queue_create("music processing", NULL);
     dispatch_async(queue, ^{
         [self saveSettings];
@@ -48,8 +54,8 @@ runTimer, spinner, timer;
             });
         }];
         dispatch_async(dispatch_get_main_queue(), ^{
-            [sender setEnabled:YES];
-            [self.spinner stopAnimation:sender];
+            [self.goButton setEnabled:YES];
+            [self.spinner stopAnimation:self.goButton];
         });        
     });
     dispatch_release(queue);
@@ -84,12 +90,13 @@ runTimer, spinner, timer;
     NSString *maxAlbums = [self.maxAlbumPopUp titleOfSelectedItem];
     NSString *doClearSinglesPlaylist = ([self.clearSinglesPlaylistButton state] == NSOnState) ? @"YES" : @"NO";
     NSString *doClearAlbumsPlaylist = ([self.clearAlbumsPlaylistButton state] == NSOnState) ? @"YES" : @"NO";
+    NSString *interval = [self.repeatButton titleOfSelectedItem];
 
     NSMutableDictionary *formData = [[NSMutableDictionary alloc] initWithObjectsAndKeys:
                                      fromPlaylistName,SOURCE_PLAYLIST, toPlaylistNameAlbums, TO_ALBUM_PLAYLIST,
                                      toPlaylistNameSingles, TO_SINGLE_PLAYLIST, minTracks, MIN_SONGS_PER_ALBUM, 
                                      maxAlbums, MAX_ALBUMS, doClearAlbumsPlaylist, CLEAR_TO_ALBUM_PLAYLIST, 
-                                     doClearSinglesPlaylist, CLEAR_TO_SINGLE_PLAYLIST, nil];
+                                     doClearSinglesPlaylist, CLEAR_TO_SINGLE_PLAYLIST, interval, REPEAT_ARRANGEMENT, nil];
     [[NSUserDefaults standardUserDefaults] setValue:formData forKey:SETTINGS_KEY];
     [[NSUserDefaults standardUserDefaults] synchronize];
 }
@@ -105,6 +112,7 @@ runTimer, spinner, timer;
         NSString *maxAlbums = [settings objectForKey: MAX_ALBUMS];
         bool doClearSinglesPlaylist = [settings objectForKey:CLEAR_TO_SINGLE_PLAYLIST];
         bool doClearAlbumsPlaylist = [settings objectForKey:CLEAR_TO_ALBUM_PLAYLIST];
+        NSString *interval = [settings objectForKey:REPEAT_ARRANGEMENT];
     
         [self.fromPlaylistPopUp selectItemWithTitle:fromPlaylistName];
         [self.toPlaylistSinglesPopUp selectItemWithTitle:toPlaylistNameSingles];
@@ -114,6 +122,7 @@ runTimer, spinner, timer;
         [self.minSongPopUp selectItemWithTitle:minTracks];
         [self.clearSinglesPlaylistButton setState:doClearSinglesPlaylist];
         [self.clearAlbumsPlaylistButton setState:doClearAlbumsPlaylist];
+        [self.repeatButton selectItemWithTitle:interval];
     }
 }
 
@@ -149,34 +158,56 @@ runTimer, spinner, timer;
             NSString *is = [NSString stringWithFormat:@"%d", (i+2)];
             [self.minSongPopUp insertItemWithTitle:is atIndex:i];
         }
+        
+        [self.repeatButton insertItemWithTitle:@"Never" atIndex:0];
+        [self.repeatButton insertItemWithTitle:@"Hourly" atIndex:1];
+        [self.repeatButton insertItemWithTitle:@"Daily" atIndex:2];
+        [self.repeatButton insertItemWithTitle:@"Weekly" atIndex:3];
 
         dispatch_async(dispatch_get_main_queue(), ^{
             [self loadSettings];
             [self.spinner stopAnimation:nil];
+            [self toggleTimer];
         });        
     });
     dispatch_release(queue);
 }
 
-/*
- //This will start a repeating timer that will fire every 5 seconds
- -(IBAction)startTimer {
- self.timer = [NSTimer scheduledTimerWithTimeInterval:5.0
- target:self
- selector:@selector(someAction:)
- userInfo:nil
- repeats:YES];
- }
- 
- //The method the timer will call when fired
- -(void)someAction:(NSTimer *)aTimer {
- //Do stuff here
- }
- 
- 
- -(IBAction)stopTimer {
- [self.timer invalidate];
- }
- */
+- (void) toggleTimer
+{
+    bool setTimer = true;
+    NSString *interval = [self.repeatButton titleOfSelectedItem];
+    int secsInterval = 60 * 60 * 60;
+    if([@"Hourly" isEqualToString:interval]){
+        // already at an hour
+    } else if([@"Daily" isEqualToString:interval]){
+        secsInterval *= 24;
+    } else if([@"Weekly" isEqualToString:interval]){
+        secsInterval *= 24 * 7;        
+    } else {
+        setTimer = false;
+        [self stopRepeat:nil];
+    }
+    
+    if(setTimer){
+        self.timer = [NSTimer scheduledTimerWithTimeInterval:secsInterval
+                                                      target:self
+                                                    selector:@selector(arrangeTracks)
+                                                    userInfo:nil
+                                                     repeats:YES];
+        [self.stopButton setEnabled:YES];
+    } else {
+        [self.stopButton setEnabled:NO];
+    }
+}
 
+- (IBAction)stopRepeat:(id)sender
+{
+    if(self.timer != nil){
+        [self.timer invalidate];
+    }
+    [self.stopButton setEnabled:NO];
+    [self.repeatButton selectItemAtIndex:0];
+    [self saveSettings];
+}
 @end

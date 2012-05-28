@@ -19,6 +19,7 @@ extern NSString * const CLEAR_TO_SINGLE_PLAYLIST;
 extern NSString * const CLEAR_TO_ALBUM_PLAYLIST;
 extern NSString * const MAX_ALBUMS;
 extern NSString * const MIN_SONGS_PER_ALBUM;
+extern NSString * const REPEAT_ARRANGEMENT;
 
 
 extern NSString * const NON_ALBUM_TITLE;
