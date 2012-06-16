@@ -22,7 +22,6 @@
     IBOutlet NSProgressIndicator *spinner;
     IBOutlet NSPopUpButton *repeatButton;
     IBOutlet NSButton *goButton;
-    IBOutlet NSButton *stopButton;
 }
 
 @property (assign) IBOutlet NSWindow *window;
@@ -42,7 +41,6 @@
 @property (nonatomic, retain) NSTimer *timer;
 @property (nonatomic, retain) IBOutlet NSPopUpButton *repeatButton;
 @property (nonatomic, retain) IBOutlet NSButton *goButton;
-@property (nonatomic, retain) IBOutlet NSButton *stopButton;
 
 - (IBAction) arrangeTracks: (id) sender;
 - (AGRunConfig *) getRunConfig;
@@ -50,6 +48,6 @@
 - (void) saveSettings;
 - (void) loadSettings;
 - (void) populateForm;
-- (IBAction)stopRepeat:(id)sender;
+- (IBAction)updateRepeat:(id)sender;
 
 @end

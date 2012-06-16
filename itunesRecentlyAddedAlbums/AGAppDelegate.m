@@ -14,7 +14,7 @@
 minSongPopUp, toPlaylistSinglesPopUp, toPlaylistAlbumsPopUp, 
 fromPlaylistPopUp, maxAlbumPopUp, outputField,
 clearAlbumsPlaylistButton, clearSinglesPlaylistButton, 
-runTimer, spinner, timer, repeatButton, goButton, stopButton;
+runTimer, spinner, timer, repeatButton, goButton;//, stopButton;
 
 - (void) applicationDidFinishLaunching:(NSNotification *)aNotification
 {
@@ -177,7 +177,7 @@ runTimer, spinner, timer, repeatButton, goButton, stopButton;
 {
     bool setTimer = true;
     NSString *interval = [self.repeatButton titleOfSelectedItem];
-    int secsInterval = 60 * 60 * 60;
+    int secsInterval = 60 * 60;
     if([@"Hourly" isEqualToString:interval]){
         // already at an hour
     } else if([@"Daily" isEqualToString:interval]){
@@ -186,7 +186,6 @@ runTimer, spinner, timer, repeatButton, goButton, stopButton;
         secsInterval *= 24 * 7;        
     } else {
         setTimer = false;
-        [self stopRepeat:nil];
     }
     
     if(setTimer){
@@ -195,19 +194,12 @@ runTimer, spinner, timer, repeatButton, goButton, stopButton;
                                                     selector:@selector(arrangeTracks)
                                                     userInfo:nil
                                                      repeats:YES];
-        [self.stopButton setEnabled:YES];
-    } else {
-        [self.stopButton setEnabled:NO];
     }
 }
 
-- (IBAction)stopRepeat:(id)sender
+- (IBAction)updateRepeat:(id)sender
 {
-    if(self.timer != nil){
-        [self.timer invalidate];
-    }
-    [self.stopButton setEnabled:NO];
-    [self.repeatButton selectItemAtIndex:0];
+    [self toggleTimer];
     [self saveSettings];
 }
 @end

@@ -70,7 +70,7 @@
     NSString *toPlaylistNameAlbums = runConfig.toPlaylistAlbums;
     
     self.runData.startTime = [[NSDate alloc] init];
-    
+    // TODO: hide itunes, much better performance while hidden
     NSDictionary *tracks = [self getSongsFromPlaylist:fromPlaylistName];
     block(self.runData);
     if(tracks == nil){
