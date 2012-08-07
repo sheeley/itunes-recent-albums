@@ -184,13 +184,11 @@ runTimer, spinner, timer, repeatButton, goButton;//, stopButton;
         secsInterval *= 24;
     } else if([@"Weekly" isEqualToString:interval]){
         secsInterval *= 24 * 7;
-//        } else if ([@"Test" isEqualToString:interval]){
-//        secsInterval = 10;
     } else {
         setTimer = false;
     }
     
-    if(setTimer){
+    if(setTimer && secsInterval > 0){
         if(self.timer == nil || [self.timer timeInterval] != secsInterval){
             if(self.timer != nil){
                 [self.timer invalidate];
