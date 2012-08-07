@@ -158,7 +158,7 @@
 			isa = PBXProject;
 			attributes = {
 				CLASSPREFIX = AG;
-				LastUpgradeCheck = 0430;
+				LastUpgradeCheck = 0440;
 			};
 			buildConfigurationList = C2006E4A15145CA500FB79E0 /* Build configuration list for PBXProject "itunesRecentlyAddedAlbums" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -285,6 +285,7 @@
 		C2006E6F15145CA500FB79E0 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "itunesRecentlyAddedAlbums/itunesRecentlyAddedAlbums-Prefix.pch";
 				INFOPLIST_FILE = "itunesRecentlyAddedAlbums/itunesRecentlyAddedAlbums-Info.plist";
@@ -296,6 +297,7 @@
 		C2006E7015145CA500FB79E0 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "itunesRecentlyAddedAlbums/itunesRecentlyAddedAlbums-Prefix.pch";
 				INFOPLIST_FILE = "itunesRecentlyAddedAlbums/itunesRecentlyAddedAlbums-Info.plist";

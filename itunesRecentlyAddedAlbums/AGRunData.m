@@ -37,17 +37,20 @@ maxTracksToIngest, minTracksPerAlbum;
 - (NSString *) toString
 {
     NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-    //    [dateFormatter setDateStyle:NSDateFormatterMediumStyle];
     [dateFormatter setDateFormat:@"yyyy-MM-dd HH:mm"];
     
     NSString *output = [NSString stringWithFormat:@"Run started: %@\n", [dateFormatter stringFromDate:startTime]];
     
-    for(NSString *msg in self.messages){
-        output = [output stringByAppendingFormat:@"%@\n", msg];
+    if(self.messages != nil && [self.messages count] > 0){
+        for(NSString *msg in [NSArray arrayWithArray:self.messages]){
+            output = [output stringByAppendingFormat:@"%@\n", msg];
+        }
     }
-
-    for(NSString *msg in self.errorMessages){
-        output = [output stringByAppendingFormat:@"Error: %@\n", msg];
+    
+    if(self.errorMessages != nil && [self.errorMessages count] > 0){
+        for(NSString *msg in [NSArray arrayWithArray:self.errorMessages]){
+            output = [output stringByAppendingFormat:@"Error: %@\n", msg];
+        }
     }
     
     if(endTime != nil){

@@ -41,14 +41,12 @@ runTimer, spinner, timer, repeatButton, goButton;//, stopButton;
 - (void) arrangeTracks
 {
     [self.goButton setEnabled:NO];
-    [self toggleTimer];
     [self.spinner startAnimation:self.goButton];
     dispatch_queue_t queue = dispatch_queue_create("music processing", NULL);
     dispatch_async(queue, ^{
         [self saveSettings];
-        AGRunConfig *config = [self getRunConfig];
-        AGItunes *_agItunes = [[AGItunes alloc] initWithConfig:config];
-        [_agItunes arrangeSongsUpdateUIWithBlock: ^(AGRunData *output) {
+        [agItunes setConfig:[self getRunConfig]];
+        [agItunes arrangeSongsUpdateUIWithBlock: ^(AGRunData *output) {
             dispatch_async(dispatch_get_main_queue(), ^{
                 [self.outputField setStringValue: [output toString]];
             });
@@ -56,6 +54,7 @@ runTimer, spinner, timer, repeatButton, goButton;//, stopButton;
         dispatch_async(dispatch_get_main_queue(), ^{
             [self.goButton setEnabled:YES];
             [self.spinner stopAnimation:self.goButton];
+            [self toggleTimer];
         });        
     });
     dispatch_release(queue);
@@ -163,6 +162,7 @@ runTimer, spinner, timer, repeatButton, goButton;//, stopButton;
         [self.repeatButton insertItemWithTitle:@"Hourly" atIndex:1];
         [self.repeatButton insertItemWithTitle:@"Daily" atIndex:2];
         [self.repeatButton insertItemWithTitle:@"Weekly" atIndex:3];
+//        [self.repeatButton insertItemWithTitle:@"Test" atIndex:4];
 
         dispatch_async(dispatch_get_main_queue(), ^{
             [self loadSettings];
@@ -177,23 +177,33 @@ runTimer, spinner, timer, repeatButton, goButton;//, stopButton;
 {
     bool setTimer = true;
     NSString *interval = [self.repeatButton titleOfSelectedItem];
-    int secsInterval = 60 * 60;
+    int secsInterval = 0;
     if([@"Hourly" isEqualToString:interval]){
-        // already at an hour
+        secsInterval = 60 * 60;
     } else if([@"Daily" isEqualToString:interval]){
         secsInterval *= 24;
     } else if([@"Weekly" isEqualToString:interval]){
-        secsInterval *= 24 * 7;        
+        secsInterval *= 24 * 7;
+//        } else if ([@"Test" isEqualToString:interval]){
+//        secsInterval = 10;
     } else {
         setTimer = false;
     }
     
     if(setTimer){
-        self.timer = [NSTimer scheduledTimerWithTimeInterval:secsInterval
-                                                      target:self
-                                                    selector:@selector(arrangeTracks)
-                                                    userInfo:nil
-                                                     repeats:YES];
+        if(self.timer == nil || [self.timer timeInterval] != secsInterval){
+            if(self.timer != nil){
+                [self.timer invalidate];
+            }
+            self.timer = [NSTimer scheduledTimerWithTimeInterval:secsInterval
+                                                          target:self
+                                                        selector:@selector(arrangeTracks)
+                                                        userInfo:nil
+                                                         repeats:YES];
+        }
+    } else if(self.timer != nil){
+        [self.timer invalidate];
+        self.timer = nil;
     }
 }
 

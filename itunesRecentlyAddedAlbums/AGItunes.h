@@ -14,10 +14,12 @@
 
 @interface AGItunes : NSObject
 
-@property (nonatomic, retain) AGRunData *runData;
+//@property (nonatomic, retain) AGRunData *runData;
 @property (nonatomic, retain) AGRunConfig *runConfig;
+@property (nonatomic, retain) iTunesApplication *iTunes;
 
 - (id) initWithConfig: (AGRunConfig *) config;
+- (void) setConfig: (AGRunConfig *) config;
 - (iTunesApplication *) getItunes;
 - (SBElementArray *) getItunesPlaylists;
 - (iTunesUserPlaylist *) getPlaylistWithName: (NSString *) playlistName;
