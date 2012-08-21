@@ -16,7 +16,7 @@
     IBOutlet NSPopUpButton *toPlaylistAlbumsPopUp;
     IBOutlet NSPopUpButton *minSongPopUp;
     IBOutlet NSPopUpButton *maxAlbumPopUp;
-    IBOutlet NSTextField *outputField;
+    IBOutlet NSTextView *outputField;
     IBOutlet NSButton *clearSinglesPlaylistButton;
     IBOutlet NSButton *clearAlbumsPlaylistButton;
     IBOutlet NSProgressIndicator *spinner;
@@ -34,7 +34,7 @@
 @property (nonatomic, retain) IBOutlet NSPopUpButton *toPlaylistAlbumsPopUp;
 @property (nonatomic, retain) IBOutlet NSPopUpButton *minSongPopUp;
 @property (nonatomic, retain) IBOutlet NSPopUpButton *maxAlbumPopUp;
-@property (nonatomic, retain) IBOutlet NSTextField *outputField;
+@property (nonatomic, retain) IBOutlet NSTextView *outputField;
 @property (nonatomic, retain) IBOutlet NSButton *clearSinglesPlaylistButton;
 @property (nonatomic, retain) IBOutlet NSButton *clearAlbumsPlaylistButton;
 @property (nonatomic, retain) IBOutlet NSProgressIndicator *spinner;

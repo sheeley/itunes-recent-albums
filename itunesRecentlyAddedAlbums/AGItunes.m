@@ -123,22 +123,28 @@
     [runData logMessage:message];
     NSMutableDictionary *albums = [[NSMutableDictionary alloc] init];
     NSMutableArray *singles = [[NSMutableArray alloc] init];
+    NSError *error;
+    NSRegularExpression *regex = [[NSRegularExpression alloc] initWithPattern:@"\\.(com|org|net)" options:NSRegularExpressionCaseInsensitive error:&error];
+    if(error != nil){
+        DLog(@"%@", error);
+    }
     
     for(iTunesTrack *track in tracks){
         if(runData.tracksIngested > self.runConfig.maxTracksToIngest){
             message = [NSString stringWithFormat:@"Hit %d tracks, done reading", self.runConfig.maxTracksToIngest];
             [runData logMessage:message];
             break;
-        }
-        
+        }        
+
         NSString *albumTitle = [AGUtils stripString:[track album]];
-        if(([track trackNumber] == 0 && [[track name] length] == 0) || [self albumTitleIsBad: albumTitle]){
+        if(([track trackNumber] == 0 && [[track name] length] == 0)){
             message = [NSString stringWithFormat:@"SKIPPING: %@", [track name]];
             [runData logMessage:message];
             continue;
         }
         
-        if(albumTitle == nil || [albumTitle length] == 0){
+        if(albumTitle == nil || [albumTitle length] == 0 ||
+           [regex numberOfMatchesInString:albumTitle options:0 range:NSMakeRange(0, [albumTitle length])] > 0 ){
             [singles addObject:track];
         } else {
             NSMutableArray *currAlbum = [albums objectForKey:albumTitle];

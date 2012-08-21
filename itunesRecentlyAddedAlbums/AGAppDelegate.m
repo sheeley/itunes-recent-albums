@@ -48,7 +48,7 @@ runTimer, spinner, timer, repeatButton, goButton;//, stopButton;
         [agItunes setConfig:[self getRunConfig]];
         [agItunes arrangeSongsUpdateUIWithBlock: ^(AGRunData *output) {
             dispatch_async(dispatch_get_main_queue(), ^{
-                [self.outputField setStringValue: [output toString]];
+                [self.outputField setString:[output toString]];
             });
         }];
         dispatch_async(dispatch_get_main_queue(), ^{
