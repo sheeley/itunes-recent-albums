@@ -22,7 +22,7 @@ extern NSString * const MIN_SONGS_PER_ALBUM;
 extern NSString * const REPEAT_ARRANGEMENT;
 
 
-extern NSString * const NON_ALBUM_TITLE;
+//extern NSString * const NON_ALBUM_TITLE;
 extern NSString * const ALBUM_CONTEXT;
 extern NSString * const SINGLES_CONTEXT;
 

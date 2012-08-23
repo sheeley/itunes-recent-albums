@@ -31,6 +31,7 @@ runTimer, spinner, timer, repeatButton, goButton;//, stopButton;
     
     self.agItunes = [[AGItunes alloc] init];
     [self populateForm];
+    [self observeNotifications];
 }
 
 - (IBAction) arrangeTracks: (id) sender
@@ -38,32 +39,16 @@ runTimer, spinner, timer, repeatButton, goButton;//, stopButton;
     [self arrangeTracks];
 }
 
-- (void) arrangeTracks
-{
-    [self.goButton setEnabled:NO];
-    [self.spinner startAnimation:self.goButton];
-    dispatch_queue_t queue = dispatch_queue_create("music processing", NULL);
-    dispatch_async(queue, ^{
-        [self saveSettings];
-        [agItunes setConfig:[self getRunConfig]];
-        [agItunes arrangeSongsUpdateUIWithBlock: ^(AGRunData *output) {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [self.outputField setString:[output toString]];
-            });
-        }];
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [self.goButton setEnabled:YES];
-            [self.spinner stopAnimation:self.goButton];
-            [self toggleTimer];
-        });        
-    });
-    dispatch_release(queue);
-}
-
 - (IBAction) refreshPlaylists: (id) sender
 {
     [self saveSettings];
     [self populateForm];
+}
+
+- (IBAction)updateRepeat:(id)sender
+{
+    [self toggleTimer];
+    [self saveSettings];
 }
 
 - (AGRunConfig *) getRunConfig
@@ -78,6 +63,30 @@ runTimer, spinner, timer, repeatButton, goButton;//, stopButton;
     config.doClearAlbumsPlaylist = ([self.clearAlbumsPlaylistButton state] == NSOnState) ? @"YES" : @"NO";
     config.maxTracksToIngest = 1000;
     return config;
+}
+
+- (void) arrangeTracks
+{
+    [self.goButton setEnabled:NO];
+    [self.spinner startAnimation:self.goButton];
+    [self.outputField setString:@""];
+    dispatch_queue_t queue = dispatch_queue_create("music processing", NULL);
+    dispatch_async(queue, ^{
+        [self saveSettings];
+        [agItunes setConfig:[self getRunConfig]];
+        [agItunes arrangeSongs];
+//         : ^(AGRunData *output) {
+//            dispatch_async(dispatch_get_main_queue(), ^{
+//                [self.outputField setString:[output toString]];
+//            });
+//        }];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self.goButton setEnabled:YES];
+            [self.spinner stopAnimation:self.goButton];
+            [self toggleTimer];
+        });        
+    });
+    dispatch_release(queue);
 }
 
 -(void) saveSettings
@@ -205,9 +214,20 @@ runTimer, spinner, timer, repeatButton, goButton;//, stopButton;
     }
 }
 
-- (IBAction)updateRepeat:(id)sender
+-(void) observeNotifications
 {
-    [self toggleTimer];
-    [self saveSettings];
+    NSNotificationCenter *center = [NSNotificationCenter defaultCenter];
+    NSOperationQueue *mainQueue = [NSOperationQueue mainQueue];
+    [center addObserverForName:@"output" object:nil queue:mainQueue usingBlock:^(NSNotification *note) {
+        id payload = [[note userInfo] valueForKey:@"output"];
+        if([payload isKindOfClass:[NSString class]]){
+            NSString *currVal = [self.outputField string];
+            if([currVal length] > 0){
+                currVal = [currVal stringByAppendingString:@"\n"];
+            }
+            NSString *output = [currVal stringByAppendingString:payload];
+            [self.outputField setString:output];
+        }
+    }];
 }
 @end
