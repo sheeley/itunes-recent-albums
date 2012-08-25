@@ -9,7 +9,6 @@
 #import <Foundation/Foundation.h>
 #import <ScriptingBridge/SBApplication.h>
 #import "iTunes.h"
-#import "AGRunData.h"
 #import "AGRunConfig.h"
 
 @interface AGItunes : NSObject

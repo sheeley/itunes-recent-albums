@@ -107,7 +107,7 @@
 
     NSDate *endDate = [[NSDate alloc] init];
     [self notify: [NSString stringWithFormat:@"End Date: %@", [dateFormatter stringFromDate:endDate]]];
-    [self notify: [NSString stringWithFormat:@"Seconds elapsed: %f", fabs([startDate timeIntervalSinceNow]) / 1000]];
+    [self notify: [NSString stringWithFormat:@"Seconds elapsed: %f", fabs([startDate timeIntervalSinceNow])]];
 }
 
 - (NSDictionary *) getSongsFromPlaylist: (NSString *) fromPlaylistName// //andRunData: (AGRunData *) runData
@@ -125,7 +125,6 @@
         DLog(@"%@", error);
     }
     
-    // todo
     int tracksIngested = 0;
     for(iTunesTrack *track in tracks){
         if(tracksIngested > self.runConfig.maxTracksToIngest){
@@ -202,11 +201,11 @@
     int totalAlbumTracksAdded = 0;
     int albumsProcessed = 0;
     int totalSinglesTracksAdded = 0;
-    int totalAlbums = 0;
     
     NSMutableArray *singles = [allTracks objectForKey:SINGLES_CONTEXT]; 
     [self notify: [NSString stringWithFormat:@"original singles count: %lu", [singles count]]];
     NSDictionary *albums = [allTracks objectForKey:ALBUM_CONTEXT];
+    long totalAlbums = [albums count];
     NSMutableArray *albumKeys = [[NSMutableArray alloc] init];
     [self notify: [NSString stringWithFormat:@"original album count: %lu", [albums count]]];
     
@@ -247,7 +246,7 @@
         }
     }
 
-    [self notify: [NSString stringWithFormat:@"%d albums (out of %d total) added with %d songs to %@", albumsProcessed, totalAlbums, totalAlbumTracksAdded, toPlaylistNameAlbums]];
+    [self notify: [NSString stringWithFormat:@"%d albums (out of %ld total) added with %d songs to %@", albumsProcessed, totalAlbums, totalAlbumTracksAdded, toPlaylistNameAlbums]];
     [self notify: [NSString stringWithFormat:@"%d singles added to %@", totalSinglesTracksAdded, toPlaylistNameSingles]];
 }
 
