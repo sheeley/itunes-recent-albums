@@ -144,7 +144,7 @@ runTimer, spinner, timer, repeatButton, goButton;//, stopButton;
         [self.toPlaylistSinglesPopUp insertItemWithTitle:NO_PLAYLIST atIndex:0];
         [self.toPlaylistAlbumsPopUp insertItemWithTitle:NO_PLAYLIST atIndex:0];
         [self.fromPlaylistPopUp insertItemWithTitle:NO_PLAYLIST atIndex:0];
-        int i = 1, ix = 1;
+        int i = 0, ix = 0;
         if(availablePlaylists != nil){
             for(iTunesUserPlaylist *playlist in availablePlaylists){
                 if([playlist specialKind] == iTunesESpKNone && ![playlist smart]){
