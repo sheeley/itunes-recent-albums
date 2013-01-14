@@ -10,19 +10,20 @@
 #import "AGItunes.h"
 #import "AGUtils.h"
 
-@interface AGAppDelegate : NSObject <NSApplicationDelegate> {
-    IBOutlet NSPopUpButton *fromPlaylistPopUp;
-    IBOutlet NSPopUpButton *toPlaylistSinglesPopUp;
-    IBOutlet NSPopUpButton *toPlaylistAlbumsPopUp;
-    IBOutlet NSPopUpButton *minSongPopUp;
-    IBOutlet NSPopUpButton *maxAlbumPopUp;
-    IBOutlet NSTextView *outputField;
-    IBOutlet NSButton *clearSinglesPlaylistButton;
-    IBOutlet NSButton *clearAlbumsPlaylistButton;
-    IBOutlet NSProgressIndicator *spinner;
-    IBOutlet NSPopUpButton *repeatButton;
-    IBOutlet NSButton *goButton;
-}
+@interface AGAppDelegate : NSObject <NSApplicationDelegate>
+//{
+//    IBOutlet NSPopUpButton *fromPlaylistPopUp;
+//    IBOutlet NSPopUpButton *toPlaylistSinglesPopUp;
+//    IBOutlet NSPopUpButton *toPlaylistAlbumsPopUp;
+//    IBOutlet NSPopUpButton *minSongPopUp;
+//    IBOutlet NSPopUpButton *maxAlbumPopUp;
+//    IBOutlet NSTextView *outputField;
+//    IBOutlet NSButton *clearSinglesPlaylistButton;
+//    IBOutlet NSButton *clearAlbumsPlaylistButton;
+//    IBOutlet NSProgressIndicator *spinner;
+//    IBOutlet NSPopUpButton *repeatButton;
+//    IBOutlet NSButton *goButton;
+//}
 
 @property (assign) IBOutlet NSWindow *window;
 @property (nonatomic, retain) AGItunes *agItunes;

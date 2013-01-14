@@ -10,19 +10,13 @@
 
 @implementation AGAppDelegate
 
-@synthesize window = _window, agItunes,
-minSongPopUp, toPlaylistSinglesPopUp, toPlaylistAlbumsPopUp, 
-fromPlaylistPopUp, maxAlbumPopUp, outputField,
-clearAlbumsPlaylistButton, clearSinglesPlaylistButton, 
-runTimer, spinner, timer, repeatButton, goButton;//, stopButton;
-
 - (void) applicationDidFinishLaunching:(NSNotification *)aNotification
 {
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     if ([defaults objectForKey:SETTINGS_KEY] == nil){
         NSDictionary *defaultSettings = [[NSDictionary alloc] initWithObjectsAndKeys:@"Music", SOURCE_PLAYLIST,
                                          NO_PLAYLIST, TO_ALBUM_PLAYLIST, NO_PLAYLIST, TO_SINGLE_PLAYLIST, @"5",
-                                         MIN_SONGS_PER_ALBUM, @"10", MAX_ALBUMS, @"YES", CLEAR_TO_ALBUM_PLAYLIST, 
+                                         MIN_SONGS_PER_ALBUM, @"10", MAX_ALBUMS, @"YES", CLEAR_TO_ALBUM_PLAYLIST,
                                          @"YES", CLEAR_TO_SINGLE_PLAYLIST, @"Never", REPEAT_ARRANGEMENT, nil];
         NSDictionary *domain = [[NSDictionary alloc] initWithObjectsAndKeys:defaultSettings, SETTINGS_KEY, nil];
         [defaults registerDefaults:domain];
@@ -73,8 +67,8 @@ runTimer, spinner, timer, repeatButton, goButton;//, stopButton;
     dispatch_queue_t queue = dispatch_queue_create("music processing", NULL);
     dispatch_async(queue, ^{
         [self saveSettings];
-        [agItunes setConfig:[self getRunConfig]];
-        [agItunes arrangeSongs];
+        [_agItunes setConfig:[self getRunConfig]];
+        [_agItunes arrangeSongs];
 //         : ^(AGRunData *output) {
 //            dispatch_async(dispatch_get_main_queue(), ^{
 //                [self.outputField setString:[output toString]];
@@ -141,30 +135,28 @@ runTimer, spinner, timer, repeatButton, goButton;//, stopButton;
     dispatch_async(queue, ^{
         SBElementArray *availablePlaylists = [self.agItunes getItunesPlaylists];
         
-        [self.toPlaylistSinglesPopUp insertItemWithTitle:NO_PLAYLIST atIndex:0];
-        [self.toPlaylistAlbumsPopUp insertItemWithTitle:NO_PLAYLIST atIndex:0];
-        [self.fromPlaylistPopUp insertItemWithTitle:NO_PLAYLIST atIndex:0];
-        int i = 0, ix = 0;
+        [self.toPlaylistSinglesPopUp addItemWithTitle:NO_PLAYLIST];
+        [self.toPlaylistAlbumsPopUp addItemWithTitle:NO_PLAYLIST];
+        [self.fromPlaylistPopUp addItemWithTitle:NO_PLAYLIST];
         if(availablePlaylists != nil){
             for(iTunesUserPlaylist *playlist in availablePlaylists){
+                NSString *pName = [playlist name];
                 if([playlist specialKind] == iTunesESpKNone && ![playlist smart]){
-                    [self.toPlaylistSinglesPopUp insertItemWithTitle:[playlist name] atIndex:i];
-                    [self.toPlaylistAlbumsPopUp insertItemWithTitle:[playlist name] atIndex:i];
-                    i++;
+                    [[self toPlaylistAlbumsPopUp] addItemWithTitle:pName];
+                    [[self toPlaylistSinglesPopUp] addItemWithTitle:pName];
                 }            
-                [self.fromPlaylistPopUp insertItemWithTitle:[playlist name] atIndex:ix];
-                ix++;
+                [[self fromPlaylistPopUp] addItemWithTitle:pName];
             }
         }
         
-        for(i = 0; i<11; i++){
+        for(int i = 0; i<11; i++){
             NSString *is = [NSString stringWithFormat:@"%d", (i+2)];
-            [self.maxAlbumPopUp insertItemWithTitle:is atIndex:i];
+            [self.maxAlbumPopUp addItemWithTitle:is];
         }
         
-        for(i = 0; i<9; i++){
+        for(int i = 0; i<9; i++){
             NSString *is = [NSString stringWithFormat:@"%d", (i+2)];
-            [self.minSongPopUp insertItemWithTitle:is atIndex:i];
+            [self.minSongPopUp addItemWithTitle:is];
         }
         
         [self.repeatButton insertItemWithTitle:@"Never" atIndex:0];
