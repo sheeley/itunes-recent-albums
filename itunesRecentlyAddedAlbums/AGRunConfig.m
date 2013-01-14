@@ -10,10 +10,6 @@
 
 @implementation AGRunConfig
 
-@synthesize  fromPlaylist, toPlaylistAlbums, toPlaylistSingles, 
-maxTracksToIngest, maxAlbumsToProcess, minTracksPerAlbum,
-doClearSinglesPlaylist, doClearAlbumsPlaylist;
-
 -(id)initWith
 {
     if (self = [super init])

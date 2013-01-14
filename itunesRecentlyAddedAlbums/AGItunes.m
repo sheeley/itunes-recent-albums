@@ -11,8 +11,6 @@
 
 @implementation AGItunes
 
-@synthesize runConfig, iTunes;
-
 - (id)init
 {
     return [self initWithConfig:nil];
@@ -32,11 +30,11 @@
 }
 
 - (iTunesApplication *) getItunes {
-    if(self.iTunes == nil){
-        self.iTunes = [SBApplication applicationWithBundleIdentifier:@"com.apple.iTunes"];
-        if([iTunes respondsToSelector:@selector(sources)]){
-            if(![iTunes isRunning]){
-                [iTunes run];
+    if(_iTunes == nil){
+        _iTunes = [SBApplication applicationWithBundleIdentifier:@"com.apple.iTunes"];
+        if([_iTunes respondsToSelector:@selector(sources)]){
+            if(![_iTunes isRunning]){
+                [_iTunes run];
             }
         } else {
             self.iTunes = nil;
@@ -47,7 +45,7 @@
 
 - (SBElementArray *) getItunesPlaylists
 {
-    iTunesApplication *_iTunes = [self getItunes];
+    [self getItunes];
     if(_iTunes != nil){
         SBElementArray *sources = [_iTunes sources];
         iTunesSource *source = [sources objectWithName:@"Library"];
@@ -75,13 +73,13 @@
 
 - (void) arrangeSongs;
 {    
-    if(runConfig == nil){
+    if(_runConfig == nil){
         return;
     }
     
-    NSString *fromPlaylistName = runConfig.fromPlaylist;
-    NSString *toPlaylistNameSingles = runConfig.toPlaylistSingles;
-    NSString *toPlaylistNameAlbums = runConfig.toPlaylistAlbums;
+    NSString *fromPlaylistName = _runConfig.fromPlaylist;
+    NSString *toPlaylistNameSingles = _runConfig.toPlaylistSingles;
+    NSString *toPlaylistNameAlbums = _runConfig.toPlaylistAlbums;
     NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
     [dateFormatter setDateFormat:@"yyyy-MM-dd HH:mm"];
     

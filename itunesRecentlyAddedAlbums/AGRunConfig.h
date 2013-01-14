@@ -10,9 +10,9 @@
 
 @interface AGRunConfig : NSObject
 
-@property (nonatomic, retain) NSString *fromPlaylist;
-@property (nonatomic, retain) NSString *toPlaylistSingles;
-@property (nonatomic, retain) NSString *toPlaylistAlbums;
+@property (strong, nonatomic) NSString *fromPlaylist;
+@property (strong, nonatomic) NSString *toPlaylistSingles;
+@property (strong, nonatomic) NSString *toPlaylistAlbums;
 
 @property int minTracksPerAlbum;
 @property int maxAlbumsToProcess;

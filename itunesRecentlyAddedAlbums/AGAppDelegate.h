@@ -11,37 +11,24 @@
 #import "AGUtils.h"
 
 @interface AGAppDelegate : NSObject <NSApplicationDelegate>
-//{
-//    IBOutlet NSPopUpButton *fromPlaylistPopUp;
-//    IBOutlet NSPopUpButton *toPlaylistSinglesPopUp;
-//    IBOutlet NSPopUpButton *toPlaylistAlbumsPopUp;
-//    IBOutlet NSPopUpButton *minSongPopUp;
-//    IBOutlet NSPopUpButton *maxAlbumPopUp;
-//    IBOutlet NSTextView *outputField;
-//    IBOutlet NSButton *clearSinglesPlaylistButton;
-//    IBOutlet NSButton *clearAlbumsPlaylistButton;
-//    IBOutlet NSProgressIndicator *spinner;
-//    IBOutlet NSPopUpButton *repeatButton;
-//    IBOutlet NSButton *goButton;
-//}
 
 @property (assign) IBOutlet NSWindow *window;
-@property (nonatomic, retain) AGItunes *agItunes;
 
-@property (nonatomic, retain) NSTimer *runTimer;
+@property (strong, nonatomic) AGItunes *agItunes;
+@property (strong, nonatomic) NSTimer *runTimer;
 
-@property (nonatomic, retain) IBOutlet NSPopUpButton *fromPlaylistPopUp;
-@property (nonatomic, retain) IBOutlet NSPopUpButton *toPlaylistSinglesPopUp;
-@property (nonatomic, retain) IBOutlet NSPopUpButton *toPlaylistAlbumsPopUp;
-@property (nonatomic, retain) IBOutlet NSPopUpButton *minSongPopUp;
-@property (nonatomic, retain) IBOutlet NSPopUpButton *maxAlbumPopUp;
-@property (nonatomic, retain) IBOutlet NSTextView *outputField;
-@property (nonatomic, retain) IBOutlet NSButton *clearSinglesPlaylistButton;
-@property (nonatomic, retain) IBOutlet NSButton *clearAlbumsPlaylistButton;
-@property (nonatomic, retain) IBOutlet NSProgressIndicator *spinner;
-@property (nonatomic, retain) NSTimer *timer;
-@property (nonatomic, retain) IBOutlet NSPopUpButton *repeatButton;
-@property (nonatomic, retain) IBOutlet NSButton *goButton;
+@property (weak) IBOutlet NSPopUpButton *fromPlaylistPopUp;
+@property (weak) IBOutlet NSPopUpButton *toPlaylistSinglesPopUp;
+@property (weak) IBOutlet NSPopUpButton *toPlaylistAlbumsPopUp;
+@property (weak) IBOutlet NSPopUpButton *minSongPopUp;
+@property (weak) IBOutlet NSPopUpButton *maxAlbumPopUp;
+@property (assign) IBOutlet NSTextView *outputField;
+@property (weak) IBOutlet NSButton *clearSinglesPlaylistButton;
+@property (weak) IBOutlet NSButton *clearAlbumsPlaylistButton;
+@property (weak) IBOutlet NSProgressIndicator *spinner;
+@property (weak) NSTimer *timer;
+@property (weak) IBOutlet NSPopUpButton *repeatButton;
+@property (weak) IBOutlet NSButton *goButton;
 
 - (IBAction) arrangeTracks: (id) sender;
 - (AGRunConfig *) getRunConfig;

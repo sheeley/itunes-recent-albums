@@ -10,7 +10,6 @@
 
 @implementation AGUtils
 
-
 NSString * const SETTINGS_KEY = @"settings";
 NSString * const NO_PLAYLIST = @"No playlist";
 NSString * const SOURCE_PLAYLIST = @"SOURCE";
@@ -29,7 +28,7 @@ NSString * const SINGLES_CONTEXT = @"SINGLES";
 
 +(NSString *) stripString: (NSString *) origString;
 {
-    return [origString stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+    return [origString stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
 }
 
 @end
